@@ -3,7 +3,7 @@ node_modules
 dist
 .vercel
 tmp
-exports
-assets
-scripts
+/exports
+/assets
+/scripts
 *.log
