@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Angle Generation Canvas Prototype</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="workspace angle-workspace" id="workspace" aria-label="Angle generation canvas">
+      <svg class="connections" id="connections" aria-hidden="true"></svg>
+
+      <section class="node image-node angle-tall-node" data-node-id="angle-input-1" style="--x: 98px; --y: 262px">
+        <header class="node-header">
+          <span>image.png</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-input photo-input-3"></div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add another image input</span>
+        </footer>
+        <span class="port port-out" data-port="angle-input-1-out"></span>
+      </section>
+
+      <section class="node image-node angle-tall-node" data-node-id="angle-input-2" style="--x: 414px; --y: 262px">
+        <header class="node-header">
+          <span>image.png</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-input photo-input-4"></div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add another image input</span>
+        </footer>
+        <span class="port port-out" data-port="angle-input-2-out"></span>
+      </section>
+
+      <section class="node image-node angle-ref-node angle-panorama-node" data-node-id="angle-panorama" style="--x: 730px; --y: 262px">
+        <header class="node-header">
+          <span>image.png</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-output photo-angle-panorama"></div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add another image input</span>
+        </footer>
+        <span class="port port-out" data-port="angle-panorama-out"></span>
+      </section>
+
+      <section class="node image-node angle-ref-node angle-topview-node" data-node-id="angle-topview" style="--x: 730px; --y: 496px">
+        <header class="node-header">
+          <span>image.png</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-output photo-angle-topview"></div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add another image input</span>
+        </footer>
+        <span class="port port-out" data-port="angle-topview-out"></span>
+      </section>
+
+      <section class="node prompt-node angle-prompt" data-node-id="angle-prompt" style="--x: 1046px; --y: 262px">
+        <header class="node-header">
+          <span>Prompt</span>
+          <button class="icon-button copy-button" type="button" aria-label="Copy prompt" title="Copy prompt">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M8 8.5h8.5v10H8z" />
+              <path d="M5.5 15.5V5.5h8.5" />
+            </svg>
+          </button>
+        </header>
+        <div class="prompt-box">
+          <p>
+            A rectangular Barbie-themed pink bedroom, approximately 3.5 meters wide and 4.5 meters long, with a ceiling
+            height of about 2.5 meters. The ceiling is white textured popcorn plaster with a round flat flush-mount
+            ceiling light in the center.
+          </p>
+          <p>
+            Headboard wall: the short wall behind the bed is covered with large-scale pastel pink and white checkerboard
+            wallpaper, with squares around 15 cm. Centered above the bed headboard is a pink neon wall light shaped like
+            the side-profile silhouette of Barbie's head with a long ponytail.
+          </p>
+          <p>
+            Opposite short wall / gallery wall: painted solid pink. It has three vertical framed artworks arranged in one
+            horizontal row at eye level. Each artwork is in a wide white frame with white matting, approximately 50 x 70
+            cm.
+          </p>
+          <p>
+            Long wall 1 / closet wall: painted pink. In the center there is a built-in wardrobe with two tall white
+            paneled hinged doors and round nickel knobs. Closer to the gallery wall there is a white hinged door leading
+            to the hallway; the hallway is pink with gray carpet.
+          </p>
+          <p>
+            Long wall 2 / window wall: painted pink. In the center there is a window with a white PVC frame and
+            floor-length powder-pink lightweight curtains on a thin black metal curtain rod with round finials. Closer to
+            the gallery wall, on the same wall, there is a small square framed picture in a white frame. Beneath it is a
+            low beige or cream cube ottoman.
+          </p>
+          <p>
+            Furniture: a double bed stands against the headboard wall. The bed has a tall dusty-pink upholstered
+            headboard with vertical channel tufting. On both sides of the bed are two matching light pink or cream
+            mid-century modern nightstands with two drawers, slim tapered walnut-colored wooden legs, and small round
+            brass knobs.
+          </p>
+          <p>
+            Bedding: white bedding including sheet, pillowcases, and duvet cover. A dusty-pink waffle blanket is folded
+            across the foot of the bed. Pillows include white pillows, powder-pink furry square pillows, one bright
+            fuchsia Barbie pillow, and a flat decorative pillow shaped like a pink Converse sneaker with the word Barbie.
+          </p>
+          <p>
+            Create a realistic interior photograph of this pink Barbie-themed bedroom. The first and second reference
+            images show the original room. The third reference image is the full room panorama. The fourth reference
+            image is a top-down camera diagram: the camera is placed in the center of the bed, approximately above the
+            pillow area at seated-person height, around 80 cm above the mattress, and points forward from the headboard
+            toward the opposite short gallery wall.
+          </p>
+          <p>
+            Strict composition: the lower third of the frame shows the edge of the bed in perspective, moving away from
+            the viewer. Center of the frame: the short pink gallery wall with three framed artworks in wide white frames
+            arranged in one horizontal row.
+          </p>
+          <p>
+            Left side of the frame: the long window wall with a large central window, powder-pink curtains, a small square
+            framed Barbie silhouette artwork, a low beige cube ottoman, and a large green houseplant. Right side of the
+            frame: the long closet wall with a built-in wardrobe and a partially visible open white door leading to a pink
+            hallway.
+          </p>
+          <p>
+            Technical parameters: 24-28 mm equivalent wide-angle lens, symmetrical frontal composition from the center of
+            the bed, slight vanishing-point perspective toward the gallery wall, natural soft daylight from the left
+            window, rich but realistic pink tones, sharp details, high-quality real-estate or Airbnb photography, 4K
+            resolution.
+          </p>
+        </div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add variable</span>
+        </footer>
+        <span class="port port-out prompt-port" data-port="angle-prompt-out"></span>
+      </section>
+
+      <section class="node image-node model-node angle-model" data-node-id="angle-model" style="--x: 1410px; --y: 262px">
+        <header class="node-header model-header">
+          <span class="spark"></span>
+          <span>Gemini 3 (Nano Banana Pro)</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-output photo-angle-output"></div>
+        <footer class="node-footer split-footer">
+          <span><span class="plus">+</span> Add another image input</span>
+          <button class="run-button" type="button">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M5 12h13" />
+              <path d="m13 6 6 6-6 6" />
+            </svg>
+            <span>Run Model</span>
+          </button>
+        </footer>
+        <span class="port port-in port-in-prompt" data-port="angle-model-prompt-in"></span>
+        <span class="port port-in port-stack-2 port-in-image" data-port="angle-model-image-a-in"></span>
+        <span class="port port-in port-stack-3 port-in-image" data-port="angle-model-image-b-in"></span>
+        <span class="port port-in port-stack-4 port-in-image" data-port="angle-model-image-c-in"></span>
+        <span class="port port-in port-stack-5 port-in-image" data-port="angle-model-image-d-in"></span>
+        <span class="port port-out" data-port="angle-model-out"></span>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

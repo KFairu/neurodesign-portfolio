@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Panorama Canvas Prototype</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="workspace" id="workspace" aria-label="Panorama generation canvas">
+      <svg class="connections" id="connections" aria-hidden="true"></svg>
+
+      <section class="node image-node" data-node-id="input-3" style="--x: 115px; --y: 229px">
+        <header class="node-header">
+          <span>image.png</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-input photo-input-3"></div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add another image input</span>
+        </footer>
+        <span class="port port-out" data-port="input-3-out"></span>
+      </section>
+
+      <section class="node image-node" data-node-id="input-4" style="--x: 491px; --y: 229px">
+        <header class="node-header">
+          <span>image.png</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-input photo-input-4"></div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add another image input</span>
+        </footer>
+        <span class="port port-out" data-port="input-4-out"></span>
+      </section>
+
+      <section class="node prompt-node panorama-prompt" data-node-id="prompt-panorama" style="--x: 867px; --y: 229px">
+        <header class="node-header">
+          <span>Prompt</span>
+          <button class="icon-button copy-button" type="button" aria-label="Copy prompt" title="Copy prompt">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M8 8.5h8.5v10H8z" />
+              <path d="M5.5 15.5V5.5h8.5" />
+            </svg>
+          </button>
+        </header>
+        <div class="prompt-box">
+          <p>
+            Ultra-realistic 360° panoramic Barbie-themed bedroom interior, generated from the provided reference
+            images. The camera viewpoint is positioned in the CENTER of the bed at normal human eye height, as if a
+            person is standing on the mattress and capturing a full immersive 360-degree room panorama.
+          </p>
+          <p>
+            IMPORTANT: Preserve the exact room identity, architecture, proportions, furniture style, decor placement,
+            textures, and overall layout from the original photos.
+          </p>
+          <p>
+            The room is a stylish feminine Barbie-inspired bedroom with soft pastel pink aesthetics, realistic interior
+            design, cozy luxury atmosphere, and modern Pinterest-style decor.
+          </p>
+          <p>
+            Scene requirements: Full 360 panoramic room reconstruction. Ultra-wide cinematic panorama composition.
+            Aspect ratio 21:9. Natural spatial continuity between all walls. Physically correct room geometry.
+            Realistic room depth and perspective. Seamless panoramic stitching. Camera remains centered above the bed
+            area.
+          </p>
+          <p>
+            Lighting: Soft natural daytime lighting from the window. Neutral white daylight balance. Bright airy
+            atmosphere. No strong pink neon light cast. Soft realistic shadows. Cozy luxury interior mood. Editorial
+            interior photography quality.
+          </p>
+          <p>
+            Room details to preserve: Pink walls, checkerboard Barbie accent wall, Barbie neon wall sign above the bed,
+            white and pastel pink bedding, pink fluffy rug, pink curtains, Barbie pillows and decor, small bedside table
+            with lamp, framed Barbie artwork, gray carpet flooring, white ceiling texture and ceiling lamp.
+          </p>
+          <p>
+            Additional reconstruction details: On the LEFT side of the room there is a white paneled wardrobe/closet
+            partially hidden in the original photos. The bedroom door is OPEN. Outside the room is ONLY a pink
+            Barbie-style hallway corridor. Corridor should contain just soft pink walls and subtle ambient lighting. No
+            extra furniture or objects in hallway. Maintain realistic apartment continuity.
+          </p>
+          <p>
+            Style: Ultra photorealistic. High-end real estate photography. Pinterest luxury Barbie bedroom aesthetic.
+            Modern feminine interior design. Clean minimalistic decor. Cozy soft pastel tones. Instagram-ready interior
+            shot. Sharp textures and realistic materials. Premium architectural visualization quality.
+          </p>
+          <p>
+            Negative prompts: fisheye distortion, warped walls, incorrect room geometry, duplicated furniture, low
+            quality, CGI artifacts, oversaturated neon pink lighting, dark exposure, messy room, blurry textures, extra
+            windows, extra doors, unrealistic proportions, floating objects, deformed bed, plastic materials, cartoon
+            rendering, people, mirrors with reflections, random furniture, clutter, compression artifacts.
+          </p>
+        </div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add variable</span>
+        </footer>
+        <span class="port port-out prompt-port" data-port="prompt-panorama-out"></span>
+      </section>
+
+      <section class="node image-node model-node panorama-model" data-node-id="model-panorama" style="--x: 1043px; --y: 583px">
+        <header class="node-header model-header">
+          <span class="spark"></span>
+          <span>Gemini 3 (Nano Banana Pro)</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-output photo-panorama-output"></div>
+        <footer class="node-footer split-footer">
+          <span><span class="plus">+</span> Add another image input</span>
+          <button class="run-button" type="button">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M5 12h13" />
+              <path d="m13 6 6 6-6 6" />
+            </svg>
+            <span>Run Model</span>
+          </button>
+        </footer>
+        <span class="port port-in port-in-prompt" data-port="model-panorama-prompt-in"></span>
+        <span class="port port-in port-stack-2 port-in-image" data-port="model-panorama-image-a-in"></span>
+        <span class="port port-in port-stack-3 port-in-image" data-port="model-panorama-image-b-in"></span>
+        <span class="port port-out" data-port="model-panorama-out"></span>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

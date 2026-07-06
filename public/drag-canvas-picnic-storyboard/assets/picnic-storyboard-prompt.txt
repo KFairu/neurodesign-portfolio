@@ -1,0 +1,139 @@
+SECOND IMAGE (Blender 3D scene with 9-frame grid layout) = STRICT LAYOUT REFERENCE FOR EACH FRAME Use ONLY for: which camera angle goes in which grid cell, object positions within each frame, object sizes, object proportions, spacing, which objects appear in which frame, and overall composition per cell.
+FIRST IMAGE (real picnic photo) = STRICT VISUAL REFERENCE FOR MATERIALS Use ONLY for: how each object looks — material, texture, shape details, packaging design, surface finish, color, transparency, lighting mood, and atmosphere.
+Both references are equally strict in their own domain. Do NOT mix their roles.
+OUTPUT FORMAT — non-negotiable:
+ONE single vertical 9:16 image composed of a 3×3 grid of nine separate photographs, each cell showing the SAME premium summer picnic scene from a DIFFERENT camera angle. All nine cells use IDENTICAL objects, IDENTICAL materials, IDENTICAL lighting conditions, and IDENTICAL park environment — only the camera position changes between cells.
+Each cell is a complete, photorealistic commercial product photograph in its own right. The nine cells are arranged in a clean grid with thin uniform white gutters between cells. No text, no labels, no captions, no frame numbers, no annotations anywhere in the output.
+THE NINE CAMERA ANGLES (read left-to-right, top-to-bottom):
+Cell [Row 1, Col 1] — High overhead three-quarter view:
+Camera looking down at the picnic from above and slightly to the side
+LOWER-RIGHT of frame: the wooden picnic table seen from above, with two croissants on a wooden board, two white cartons, the patterned glass with cocoa, and part of the white plate with fruits visible
+LEFT of frame: the folding chair with the white rose resting on its canvas seat — the rose bud points toward the table
+UPPER part of frame: green grass with the cream fringed picnic blanket/rug and the wicker basket containing additional white cartons
+This is the establishing "scene overview" shot
+Cell [Row 1, Col 2] — Low table-level, between croissants and fruit plate, looking toward cartons:
+Camera placed very low on the wooden table surface, between the croissants (right foreground, blurred) and the fruit plate (left foreground, blurred)
+LEFT FOREGROUND (blurred): edge of the fruit plate, halved orange, checkered red-and-white napkin, edge of white ceramic plate, green grapes
+RIGHT FOREGROUND (blurred): edge of one golden croissant, edge of the warm wooden serving board
+MIDDLE GROUND (sharp focus): the two white cartons — hero product, fully readable, premium look
+BEHIND CARTONS: the patterned glass with cocoa, partially visible
+BACKGROUND (soft bokeh): green sunlit park with trees, dappled sunlight
+Cell [Row 1, Col 3] — Low table-level, between walnut and fruit plate, looking toward cartons:
+Camera placed very low on the table, between the walnut (left foreground, heavily blurred) and the fruit plate (right foreground, heavily blurred)
+LEFT FOREGROUND (heavily blurred): one whole walnut in its brown ridged shell, only silhouette readable
+RIGHT FOREGROUND (heavily blurred): corner of the red checkered napkin, edge of white plate, green grape
+MIDDLE GROUND (sharp focus): the two white cartons — the larger one dominant in center-frame, the smaller one slightly behind and to the right
+LEFT-MIDDLE BACKGROUND: the patterned glass with cocoa, partially cropped by left frame edge
+BACKGROUND (soft bokeh): green sunlit park
+Cell [Row 2, Col 1] — Camera on the chair seat, looking sideways across the table:
+Camera sitting on the folding chair's canvas seat, very low, looking horizontally toward the table from the chair side
+LOWER-LEFT FOREGROUND (heavily blurred): cream canvas chair seat fabric and warm honey-oak wooden chair frame legs (X-shaped crossed slats)
+LOWER-RIGHT FOREGROUND (heavily blurred): the white rose resting on the chair canvas — only soft creamy-white silhouette readable
+MIDDLE OF FRAME: the wooden picnic table seen edge-on from a low side angle, table edge running horizontally through mid-frame, X-shaped wooden folding leg structure visible below
+ON TABLE (left-to-right from this camera POV, REVERSED relative to the first reference image): croissants on wooden board (far-left, partially cropped) → oranges on white plate with green grapes (left of center) → two white cartons (center-right, hero focus, taller one behind, smaller one in front-left) → patterned glass with cocoa (far-right, partially cropped). Walnut barely visible from this angle.
+ABOVE TABLE: green sunlit park, soft bokeh
+Cell [Row 2, Col 2] — Pulled-back wide overhead three-quarter view:
+Same camera angle as Cell [1,1] but PULLED BACK FURTHER from the scene
+Wider, more distant framing showing more of the surrounding grass, more of the picnic blanket, more of the chair, more of the basket area
+Same objects in same positions, just smaller in frame
+Establishes broader environmental context
+Cell [Row 2, Col 3] — From the glass side, looking across the table:
+Camera positioned on the table near the patterned glass with cocoa, looking across the table toward the rest of the scene
+LOWER-LEFT FOREGROUND: the patterned glass with cocoa, slight near-focus, gold rim and floral pattern readable
+From the glass, the view continues to reveal: one of the white cartons, then the walnut, then the white plate with fruits (oranges, grapes), then the park in the background
+All foreground glass elements slightly soft, cartons and plate in sharp-to-medium focus, park in soft bokeh
+Cell [Row 3, Col 1] — From the opposite side of the glass:
+Camera on the table on the opposite side of the patterned glass relative to Cell [2,3]
+LOWER-RIGHT FOREGROUND (slightly blurred): the patterned glass with cocoa, gold rim readable
+Beyond the glass, visible across the table: the two white cartons (sharp focus, hero), the white plate with fruits, edge of one croissant on the wooden board
+BACKGROUND: green sunlit park with soft bokeh
+Cell [Row 3, Col 2] — From the croissants side, looking across the table:
+Camera positioned near the croissants on their wooden cutting board, looking across the table
+FOREGROUND: the wooden picnic table surface and the wooden board with the two golden croissants on it (near-sharp focus)
+MIDDLE GROUND: the white plate with halved orange and green grapes on the checkered red napkin
+RIGHT EDGE OF FRAME: a small portion of one of the white cartons visible
+BACKGROUND: green sunlit park
+Cell [Row 3, Col 3] — From the fruit plate side, looking across the table:
+Camera positioned near the fruit plate, looking across the table toward the rest of the scene
+FOREGROUND (sharp): the white ceramic plate with halved orange (showing juicy segmented pulp), green grapes, on the red checkered napkin
+MIDDLE GROUND: the wooden table surface receding, the two white cartons (sharp focus, hero)
+BACKGROUND: green sunlit park with soft bokeh
+OBJECT APPEARANCE — strictly from the first reference image, IDENTICAL across all nine cells:
+White cartons (HERO PRODUCT in every cell):
+Tetra Pak-style aseptic carton with characteristic angled folded top corners forming a flat-topped peak
+Small round white plastic screw cap on top
+Matte white paper-based packaging — soft paper-like surface, NOT glossy plastic, NOT shiny
+Subtle visible vertical seam down one side
+Crisp diagonal folded creases at the top forming the Tetra Pak peak geometry
+Completely blank surface — no text, no logos, no labels, no branding, no barcodes
+Soft realistic contact shadow under each carton on the wooden table
+Glass with cocoa:
+Vintage-style pressed/patterned clear glass with decorative relief texture (ribbed/floral ornamental pattern)
+Thin gold rim around the top edge
+Filled with creamy beige cocoa-colored drink
+Realistic refractions, highlights, light passing through showing the patterned glass detail
+Croissants (two, on wooden board):
+Golden-brown buttery pastry
+Crisp flaky laminated layers, visible curl/spiral shape
+Realistic baked crust with darker tips
+Wooden cutting board:
+Warm reddish-brown wood serving board with smooth surface, rounded edges, natural grain
+Oranges:
+One whole orange with glossy textured citrus skin, bright orange color
+One halved orange showing juicy segmented pulp with visible membrane lines and glossy moist interior
+White plate:
+Clean glossy white ceramic, rounded shape, subtle rim highlight
+Green grapes:
+Glossy juicy green grapes with realistic translucent skin
+Red checkered napkin:
+Red-and-white checkered gingham pattern — small even squares of red and cream-white
+Soft cotton fabric with visible weave, naturally rumpled folds
+Walnut:
+One whole walnut in natural brown ridged wrinkled shell, realistic organic texture
+Wooden picnic table:
+Warm honey-oak slatted table with parallel wooden planks and narrow gaps between them
+Natural wood grain, satin finish
+X-shaped wooden folding leg structure
+Folding chair:
+Cream/beige canvas fabric seat with soft natural folds and visible weave
+Warm honey-oak wooden frame with rounded edges and dark plastic foot caps
+White rose:
+Single creamy-white rose with soft layered petals, slight ivory tint at the base, resting on the chair canvas
+Wicker basket:
+Natural light-tan woven wicker basket with visible weave pattern
+Contains several upright white cartons (same Tetra Pak design as the hero cartons on the table) — in cells where the basket is visible, the cartons inside it are also completely blank with no branding
+Picnic blanket/rug:
+Cream-white fluffy rug with long fringed tassel edges
+Soft textile texture, laid on the grass
+Grass:
+Fresh green grass with realistic blade texture, warm sunlit tone
+Park background:
+Green sunlit park with distant trees, bushes, warm summer light
+Soft natural bokeh in all cells where it appears, dappled sunlight filtering through leaves
+LIGHTING & ATMOSPHERE — IDENTICAL across all nine cells:
+Warm natural outdoor sunlight, golden summer tone
+Sun comes from the same direction in every cell
+Soft dappled shadows from tree leaves on the wooden table, the grass, and the cartons in every cell
+Consistent shadow direction across all objects within and between cells
+Soft highlights on the matte white carton surfaces
+Warm ambient bounce from grass and wood
+Premium commercial outdoor lighting
+Cozy, elegant, luxurious summer picnic mood
+PERSPECTIVE — physically correct in every cell:
+Each cell has its own coherent single vanishing point matching its camera angle
+Park background horizon line is consistent with the camera height of each individual cell (low for cells with low cameras, higher for overhead cells)
+Lens compression and depth-of-field falloff consistent within each cell
+Light direction on the park background matches light direction on foreground/mid-ground objects in every cell
+DEPTH OF FIELD per cell:
+In every cell, the two white cartons are the sharpest focus (when in frame). Foreground objects close to camera are blurred as specified per cell. Park background is always softly blurred with natural bokeh. Smooth focus falloff, no harsh transitions.
+VISUAL STYLE:
+Ultra-realistic commercial product photography across all nine cells. Premium summer picnic campaign. Luxury lifestyle advertisement. Cinematic shallow depth of field. Editorial product photography. Photorealistic rendering. Clean white packaging mockup hero shots from nine different angles. Warm sunlit park aesthetic. All nine cells share the same color grading, same lighting, same atmosphere — they look like a single commercial campaign shot in one continuous session.
+GRID LAYOUT:
+3 columns × 3 rows
+Each cell is a vertical (portrait) photograph
+Thin uniform white gutters between cells (~10–15 pixels equivalent)
+Clean white border around the entire grid
+No text, no numbers, no labels, no captions, no annotations anywhere
+Each cell rendered at high resolution, photorealistic quality
+NEGATIVE PROMPT:
+text, labels, captions, frame numbers, annotations, Russian text, English text, UI elements, Blender interface, gizmos, wireframes, axis indicators, glossy plastic carton, shiny carton, milk jug shape, rectangular brick carton, juice box with straw, generic packaging, wrong carton silhouette, solid red napkin, plain red cloth, non-checkered napkin, plain glass, smooth glass without pattern, glass without gold rim, branding on cartons, logos, barcodes, tilted horizon, warped perspective, mismatched vanishing point, distorted background, skewed park, unrealistic lens distortion, inconsistent lighting between cells, mismatched sun direction between cells, different time of day in different cells, different objects in different cells, missing cartons, blurry hero cartons, sharp foreground when foreground should be blurred, top-down view in low-angle cells, low-angle view in overhead cells, mixed art styles, illustration, cartoon, CGI look, duplicated cells with identical angles, low quality, watermark, signature.

@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Top View Canvas Prototype</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="workspace" id="workspace" aria-label="Top-down generation canvas">
+      <svg class="connections" id="connections" aria-hidden="true"></svg>
+
+      <section class="node image-node" data-node-id="top-input-1" style="--x: 115px; --y: 229px">
+        <header class="node-header">
+          <span>image.png</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-input photo-input-3"></div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add another image input</span>
+        </footer>
+        <span class="port port-out" data-port="top-input-1-out"></span>
+      </section>
+
+      <section class="node image-node" data-node-id="top-input-2" style="--x: 491px; --y: 229px">
+        <header class="node-header">
+          <span>image.png</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-input photo-input-4"></div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add another image input</span>
+        </footer>
+        <span class="port port-out" data-port="top-input-2-out"></span>
+      </section>
+
+      <section class="node prompt-node topview-prompt" data-node-id="topview-prompt" style="--x: 867px; --y: 229px">
+        <header class="node-header">
+          <span>Prompt</span>
+          <button class="icon-button copy-button" type="button" aria-label="Copy prompt" title="Copy prompt">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M8 8.5h8.5v10H8z" />
+              <path d="M5.5 15.5V5.5h8.5" />
+            </svg>
+          </button>
+        </header>
+        <div class="prompt-box">
+          <p>
+            Ultra-realistic top-down view of a Barbie-themed pink bedroom, generated from the provided reference images.
+            The camera is positioned directly ABOVE the room in a perfectly vertical bird’s-eye perspective, capturing
+            the entire space layout from the ceiling downward.
+          </p>
+          <p>
+            IMPORTANT: Preserve the exact room identity, furniture placement, proportions, decor, textures, and
+            architecture from the original photos. The room must remain clearly recognizable as the same Barbie bedroom.
+          </p>
+          <p>
+            Composition: Full room visible from top-down perspective. Aspect ratio 5:4. Clean architectural interior
+            layout. Symmetrical realistic room proportions. Wide overhead interior photography framing. Camera centered
+            above the room. Entire bed, rug, walls, window, bedside furniture, and wardrobe visible.
+          </p>
+          <p>
+            Room details: Pink pastel walls. Checkerboard Barbie accent wall. Barbie neon wall sign above the bed. White
+            and pink bed with decorative pillows. Large fluffy pink rug beneath the bed. Small bedside table with pink
+            lamp. Framed Barbie artwork on walls. White paneled wardrobe on the left side. Open bedroom door. Minimal
+            pink hallway visible outside the room. Gray carpet flooring. White textured ceiling edges partially visible
+            around framing.
+          </p>
+          <p>
+            Lighting: Soft natural daytime lighting. Bright realistic daylight entering from the window. Neutral white
+            balance. Cozy airy atmosphere. Soft realistic shadows. No oversaturated pink light cast. High dynamic range
+            interior photography.
+          </p>
+          <p>
+            Style: Luxury Pinterest Barbie room aesthetic. Modern feminine interior design. Clean minimalistic decor.
+            Architectural digest style. High-end real estate photography. Ultra photorealistic materials. Soft pastel
+            tones. Crisp fabric and carpet textures. Premium editorial interior render.
+          </p>
+          <p>
+            Negative prompts: fisheye distortion, warped geometry, incorrect room proportions, duplicate furniture,
+            extra windows, extra doors, messy room, low quality, CGI artifacts, blurry textures, oversaturated neon
+            lighting, dark exposure, plastic materials, floating objects, deformed bed, random decor, people, mirror
+            reflections, cartoon style, unrealistic perspective, tilted camera, cropped furniture.
+          </p>
+        </div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add variable</span>
+        </footer>
+        <span class="port port-out prompt-port" data-port="topview-prompt-out"></span>
+      </section>
+
+      <section class="node image-node topview-extra-image" data-node-id="topview-extra-image" style="--x: 867px; --y: 553px">
+        <header class="node-header">
+          <span>image.png</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-input photo-topview-extra-input"></div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add another image input</span>
+        </footer>
+        <span class="port port-out" data-port="topview-extra-image-out"></span>
+      </section>
+
+      <section class="node image-node model-node topview-model" data-node-id="topview-model" style="--x: 1243px; --y: 229px">
+        <header class="node-header model-header">
+          <span class="spark"></span>
+          <span>Gemini 3 (Nano Banana Pro)</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-output photo-topview-output"></div>
+        <footer class="node-footer split-footer">
+          <span><span class="plus">+</span> Add another image input</span>
+          <button class="run-button" type="button">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M5 12h13" />
+              <path d="m13 6 6 6-6 6" />
+            </svg>
+            <span>Run Model</span>
+          </button>
+        </footer>
+        <span class="port port-in port-in-prompt" data-port="topview-model-prompt-in"></span>
+        <span class="port port-in port-stack-2 port-in-image" data-port="topview-model-image-a-in"></span>
+        <span class="port port-in port-stack-3 port-in-image" data-port="topview-model-image-b-in"></span>
+        <span class="port port-in port-stack-4 port-in-image" data-port="topview-model-image-c-in"></span>
+        <span class="port port-out" data-port="topview-model-out"></span>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

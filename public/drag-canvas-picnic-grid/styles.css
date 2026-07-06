@@ -1,0 +1,388 @@
+:root {
+  color-scheme: dark;
+  --bg: #090a0f;
+  --dot: rgba(124, 139, 165, 0.17);
+  --card: #24252b;
+  --card-edge: #343640;
+  --soft-card: #303137;
+  --text: #e7e8ee;
+  --muted: #a7a9b4;
+  --green: #16d6b2;
+  --purple: #dc7eea;
+  --canvas-scale: 0.44;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.workspace {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1660px;
+  height: 900px;
+  min-width: 1660px;
+  overflow: hidden;
+  transform: translate(-50%, -50%) scale(var(--canvas-scale));
+  transform-origin: var(--zoom-origin-x, 50%) var(--zoom-origin-y, 50%);
+  background-color: var(--bg);
+  background-image: radial-gradient(circle, var(--dot) 1px, transparent 1.2px);
+  background-size: 16px 16px;
+  cursor: grab;
+}
+
+.workspace::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 48% 42%, rgba(255, 255, 255, 0.025), transparent 34%);
+}
+
+.connections,
+.connection-layer {
+  position: absolute;
+  inset: 0;
+  width: 1900px;
+  height: 1100px;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.connections {
+  z-index: 1;
+}
+
+.connection-layer {
+  z-index: var(--connection-z, 1);
+}
+
+.connection {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  opacity: 0.9;
+}
+
+.connection.green {
+  stroke: var(--green);
+}
+
+.connection.purple {
+  stroke: var(--purple);
+}
+
+.node {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 320px;
+  transform: translate3d(var(--x), var(--y), 0);
+  background: var(--card);
+  border: 1px solid var(--card-edge);
+  border-radius: 10px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
+  color: var(--text);
+  user-select: none;
+  touch-action: none;
+  z-index: var(--node-z, 20);
+  contain: layout style;
+  will-change: transform;
+}
+
+.node.dragging {
+  cursor: grabbing;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.42);
+}
+
+.node-header {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 24px;
+  margin-bottom: 12px;
+  color: #d3d4da;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.node-header span:nth-child(2):not(.spark) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-left: auto;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.icon-button:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #f4f5f8;
+}
+
+.copy-button.copied {
+  color: var(--green);
+}
+
+.icon-button svg,
+.run-button svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.copy-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.spark {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+  background: linear-gradient(135deg, #ac90ff, #7c61ff 55%, #dacfff);
+  clip-path: polygon(50% 0, 62% 35%, 100% 50%, 62% 65%, 50% 100%, 38% 65%, 0 50%, 38% 35%);
+}
+
+.image-node {
+  height: 612px;
+  padding: 14px;
+}
+
+.model-node {
+  height: 612px;
+}
+
+.chatgpt-node {
+  height: 408px;
+}
+
+.prompt-node {
+  width: 340px;
+  height: 300px;
+  padding: 14px;
+}
+
+.photo-frame {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 5px;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.image-node .photo-frame {
+  height: 504px;
+}
+
+.photo-reference {
+  background-image: url("./assets/picnic-grid-input.png");
+  background-color: #d9c5a0;
+}
+
+.photo-layout {
+  background-image: url("./assets/picnic-layout.png");
+  background-color: #f0eee7;
+}
+
+.photo-gemini {
+  background-image: url("./assets/picnic-grid-output.png");
+  background-color: #d7c4a8;
+}
+
+.photo-chatgpt {
+  background-image: url("./assets/picnic-chatgpt-output.png");
+  background-color: #d7c4a8;
+}
+
+.chatgpt-node .photo-frame {
+  height: 300px;
+}
+
+.model-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.node-footer {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  color: #f0f1f4;
+  font-size: 11px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.plus {
+  margin-right: 6px;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.split-footer {
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 6px;
+}
+
+.run-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid #777b88;
+  border-radius: 7px;
+  background: transparent;
+  color: #f0f1f4;
+  font-size: 11px;
+  font-weight: 400;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.prompt-box {
+  position: relative;
+  height: 214px;
+  overflow: hidden;
+  padding: 20px 18px;
+  border-radius: 6px;
+  background: #34363d;
+  color: #f1f2f5;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+.prompt-box::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 62px;
+  background: linear-gradient(180deg, rgba(52, 54, 61, 0), #34363d 78%);
+  pointer-events: none;
+}
+
+.prompt-box p {
+  margin: 0 0 20px;
+}
+
+.port {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 5px solid var(--green);
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow: 0 0 0 7px rgba(22, 214, 178, 0.2);
+}
+
+.port::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: inherit;
+  background: var(--green);
+}
+
+.port-out {
+  right: -12px;
+  top: 88px;
+}
+
+.port-in {
+  left: -12px;
+  top: 88px;
+}
+
+.prompt-port,
+.prompt-in {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 7px rgba(220, 126, 234, 0.18);
+}
+
+.prompt-port::after,
+.prompt-in::after {
+  background: var(--purple);
+}
+
+.prompt-port {
+  right: -12px;
+  top: 88px;
+}
+
+.prompt-in {
+  top: 80px;
+}
+
+.port-stack-2 {
+  top: 152px;
+}
+
+.port-stack-3 {
+  top: 216px;
+}
+
+.copy-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  z-index: 2000;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(20, 20, 22, 0.92);
+  color: #fff;
+  font-size: 13px;
+  opacity: 0;
+  transform: translate(-50%, 10px);
+  transition: opacity 180ms ease, transform 180ms ease;
+  pointer-events: none;
+}
+
+.copy-toast.visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@media (max-width: 1200px) {
+  :root {
+    --canvas-scale: 0.42;
+  }
+}

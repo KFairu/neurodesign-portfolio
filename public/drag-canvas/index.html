@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Barbie Canvas Prototype</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="workspace" id="workspace" aria-label="Image generation canvas">
+      <svg class="connections" id="connections" aria-hidden="true"></svg>
+
+      <section class="node image-node" data-node-id="input-1" style="--x: 64px; --y: 34px">
+        <header class="node-header">
+          <span>image.png</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-input photo-a"></div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add more images</span>
+        </footer>
+        <span class="port port-out" data-port="input-1-out"></span>
+      </section>
+
+      <section class="node image-node" data-node-id="input-2" style="--x: 892px; --y: 34px">
+        <header class="node-header">
+          <span>image.png</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-input photo-b"></div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add more images</span>
+        </footer>
+        <span class="port port-out" data-port="input-2-out"></span>
+      </section>
+
+      <section class="node prompt-node" data-node-id="prompt-1" style="--x: 64px; --y: 770px">
+        <header class="node-header">
+          <span>Prompt</span>
+          <button class="icon-button copy-button" type="button" aria-label="Copy prompt" title="Copy prompt">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M8 8.5h8.5v10H8z" />
+              <path d="M5.5 15.5V5.5h8.5" />
+            </svg>
+          </button>
+        </header>
+        <div class="prompt-box">
+          <p>
+            Ultra-realistic interior photo enhancement of a Barbie-themed pink bedroom. Preserve the exact room layout,
+            furniture placement, decorations, wall art, bedding, carpet, neon Barbie sign, perspective, camera angle,
+            and overall composition from the original image. Keep the room clearly recognizable as the same space.
+          </p>
+          <p>
+            Main task: remove the heavy pink lighting/color cast and transform the scene into clean natural daytime
+            lighting.
+          </p>
+          <p>
+            Lighting requirements: soft neutral daylight coming from the window, realistic white daylight balance,
+            natural shadows, bright airy atmosphere, balanced exposure, high dynamic range, no magenta/pink light
+            pollution on walls, furniture, ceiling, or skin tones.
+          </p>
+          <p>
+            Color correction: walls remain pastel pink, Barbie decor stays vibrant and stylish, preserve pink aesthetic
+            without oversaturated neon wash, clean whites on bedding and furniture, accurate material colors.
+          </p>
+          <p>
+            Negative prompts: low quality, blurry, oversaturated pink lighting, neon color cast, distorted geometry,
+            warped furniture, extra objects, messy room, dark exposure, artificial CGI look.
+          </p>
+        </div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add variable</span>
+        </footer>
+        <span class="port port-out prompt-port" data-port="prompt-1-out"></span>
+      </section>
+
+      <section class="node prompt-node" data-node-id="prompt-2" style="--x: 892px; --y: 770px">
+        <header class="node-header">
+          <span>Prompt</span>
+          <button class="icon-button copy-button" type="button" aria-label="Copy prompt" title="Copy prompt">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M8 8.5h8.5v10H8z" />
+              <path d="M5.5 15.5V5.5h8.5" />
+            </svg>
+          </button>
+        </header>
+        <div class="prompt-box">
+          <p>
+            Ultra-realistic interior photo enhancement of a Barbie-themed pink bedroom. Preserve the exact room layout,
+            furniture placement, decorations, wall art, bedding, carpet, neon Barbie sign, perspective, camera angle,
+            and overall composition from the original image. Keep the room clearly recognizable as the same space.
+          </p>
+          <p>
+            Main task: remove the heavy pink lighting/color cast and transform the scene into clean natural daytime
+            lighting.
+          </p>
+          <p>
+            Lighting requirements: soft neutral daylight coming from the window, realistic white daylight balance,
+            natural shadows, bright airy atmosphere, balanced exposure, high dynamic range, no magenta/pink light
+            pollution on walls, furniture, ceiling, or skin tones.
+          </p>
+          <p>
+            Color correction: walls remain pastel pink, Barbie decor stays vibrant and stylish, preserve pink aesthetic
+            without oversaturated neon wash, clean whites on bedding and furniture, accurate material colors.
+          </p>
+          <p>
+            Negative prompts: low quality, blurry, oversaturated pink lighting, neon color cast, distorted geometry,
+            warped furniture, extra objects, messy room, dark exposure, artificial CGI look.
+          </p>
+        </div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add variable</span>
+        </footer>
+        <span class="port port-out prompt-port" data-port="prompt-2-out"></span>
+      </section>
+
+      <section class="node image-node model-node" data-node-id="model-1" style="--x: 478px; --y: 34px">
+        <header class="node-header model-header">
+          <span class="spark"></span>
+          <span>Gemini 3 (Nano Banana Pro)</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-output photo-c"></div>
+        <footer class="node-footer split-footer">
+          <span><span class="plus">+</span> Add another image input</span>
+          <button class="run-button" type="button">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M5 12h13" />
+              <path d="m13 6 6 6-6 6" />
+            </svg>
+            <span>Run Model</span>
+          </button>
+        </footer>
+        <span class="port port-in port-in-prompt" data-port="model-1-prompt-in"></span>
+        <span class="port port-in port-stack-2 port-in-image" data-port="model-1-image-in"></span>
+        <span class="port port-out" data-port="model-1-out"></span>
+      </section>
+
+      <section class="node image-node model-node" data-node-id="model-2" style="--x: 1306px; --y: 34px">
+        <header class="node-header model-header">
+          <span class="spark"></span>
+          <span>Gemini 3 (Nano Banana Pro)</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-output photo-d"></div>
+        <footer class="node-footer split-footer">
+          <span><span class="plus">+</span> Add another image input</span>
+          <button class="run-button" type="button">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M5 12h13" />
+              <path d="m13 6 6 6-6 6" />
+            </svg>
+            <span>Run Model</span>
+          </button>
+        </footer>
+        <span class="port port-in port-in-prompt" data-port="model-2-prompt-in"></span>
+        <span class="port port-in port-stack-2 port-in-image" data-port="model-2-image-in"></span>
+        <span class="port port-out" data-port="model-2-out"></span>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

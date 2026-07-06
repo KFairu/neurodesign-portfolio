@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Picnic Product Canvas Prototype</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="workspace" id="workspace" aria-label="Picnic product generation canvas">
+      <svg class="connections" id="connections" aria-hidden="true"></svg>
+
+      <section class="node image-node" data-node-id="image-reference" style="--x: 120px; --y: 170px">
+        <header class="node-header">
+          <span>image.png</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-reference"></div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add more images</span>
+        </footer>
+        <span class="port port-out" data-port="image-reference-out"></span>
+      </section>
+
+      <section class="node image-node" data-node-id="image-layout" style="--x: 500px; --y: 170px">
+        <header class="node-header">
+          <span>image.png</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-layout"></div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add more images</span>
+        </footer>
+        <span class="port port-out" data-port="image-layout-out"></span>
+      </section>
+
+      <section class="node prompt-node" data-node-id="prompt-picnic" style="--x: 880px; --y: 170px">
+        <header class="node-header">
+          <span>Prompt</span>
+          <button class="icon-button copy-button" type="button" aria-label="Copy prompt" title="Copy prompt">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M8 8.5h8.5v10H8z" />
+              <path d="M5.5 15.5V5.5h8.5" />
+            </svg>
+          </button>
+        </header>
+        <div class="prompt-box">
+          <p>TWO REFERENCE IMAGES — TWO DIFFERENT ROLES:</p>
+          <p>SECOND IMAGE (Blender 3D scene) = STRICT LAYOUT REFERENCE Use ONLY for: camera angle, object positions, object sizes, object proportions, spacing between objects, which objects appear in the frame, and overall composition.</p>
+          <p>FIRST IMAGE (real picnic photo) = STRICT VISUAL REFERENCE Use ONLY for: how each object looks — its material, texture, shape details, packaging design, surface finish, color, transparency, and the lighting/atmosphere of the scene.</p>
+          <p>Both references are equally strict in their own domain. Do NOT mix their roles.</p>
+          <p>LAYOUT — from Blender scene (second image), non-negotiable:</p>
+          <p>The final image must contain ONLY these objects in the exact positions, sizes, and proportions shown in the Blender scene:</p>
+          <p>Two white cartons — left one partially cropped by the left frame edge in the middle ground, right one fully visible standing in the middle-background</p>
+          <p>One glass with cocoa drink — positioned behind/between the cartons, partially occluded</p>
+          <p>One orange — large, left foreground</p>
+          <p>One white plate — under the orange</p>
+          <p>One red napkin — under the plate</p>
+          <p>One wooden serving board — right foreground</p>
+          <p>One croissant — on the wooden board, right foreground</p>
+          <p>Wooden table surface — fills the lower portion of the frame</p>
+          <p>Camera: low table-level, looking forward, vertical 9:16, matching the Blender perspective and framing 1:1.</p>
+          <p>Objects that must NOT appear (not in Blender scene): no walnuts, no second croissant, no grapes, no checkered napkin, no wicker basket, no folding chair, no white rose, no rug fringe, no extra props.</p>
+          <p>OBJECT APPEARANCE — strictly from the first reference image:</p>
+          <p>White cartons (HERO PRODUCT — match first image exactly):</p>
+          <p>Tetra Pak-style aseptic carton shape with angled folded top corners and a flat-topped peak</p>
+          <p>White screw cap on top — small, round, plain white plastic</p>
+          <p>Matte white paper-based packaging surface — slightly soft, paper-like, NOT glossy plastic, NOT shiny</p>
+          <p>Subtle visible vertical seam down one side</p>
+          <p>Crisp diagonal folded creases at the top forming the characteristic Tetra Pak peak geometry</p>
+          <p>Clean blank surface — no text, no logos, no labels, no branding</p>
+          <p>Soft realistic shadow under the cartons on the wood</p>
+          <p>Match the exact carton silhouette from the first image — NOT a generic milk box, NOT a rectangular brick, NOT a juice box with a straw — specifically the angled-peak Tetra Pak aseptic carton with screw cap as shown</p>
+          <p>Napkin (match first image exactly):</p>
+          <p>Red-and-white checkered pattern (gingham) — small even squares of red and white/cream</p>
+          <p>Soft cotton fabric texture with visible weave</p>
+          <p>Slightly rumpled natural folds at the edges</p>
+          <p>NOT solid red, NOT plain — must be the checkered gingham pattern from the first image</p>
+          <p>Wooden table:</p>
+          <p>Warm honey-oak slatted picnic table with visible parallel wooden planks and narrow gaps between them</p>
+          <p>Natural wood grain, satin finish</p>
+          <p>Sunlit warm tone matching the first image</p>
+          <p>Croissant:</p>
+          <p>Golden-brown buttery pastry</p>
+          <p>Crisp flaky laminated layers, visible spiral/curl shape</p>
+          <p>Realistic baked crust with darker tips</p>
+          <p>Match the croissant appearance from the first image</p>
+          <p>Orange:</p>
+          <p>Halved orange showing juicy segmented pulp with visible membrane lines and glossy moist interior</p>
+          <p>Bright orange flesh color</p>
+          <p>Realistic citrus texture</p>
+          <p>White plate:</p>
+          <p>Clean glossy white ceramic, simple round shape</p>
+          <p>Subtle highlight on the rim</p>
+          <p>Wooden serving board:</p>
+          <p>Warm reddish-brown wood cutting board with smooth surface and rounded edges</p>
+          <p>Natural grain visible</p>
+          <p>Glass with cocoa:</p>
+          <p>Vintage-style pressed/patterned clear glass with decorative relief texture (ribbed/floral pattern) and a thin gold rim at the top</p>
+          <p>Filled with creamy beige cocoa-colored drink</p>
+          <p>Realistic glass refractions, highlights, and slight transparency showing the patterned glass detail</p>
+          <p>Match the exact glass style from the first image</p>
+          <p>BACKGROUND & PERSPECTIVE — physically correct:</p>
+          <p>The park background must follow the SAME perspective and vanishing point as the table and objects in the Blender scene</p>
+          <p>Camera is low and roughly horizontal — therefore the horizon line of the park (where grass meets distant trees) must sit at a realistic eye-level for a low table-level camera, NOT tilted, NOT skewed</p>
+          <p>Grass plane recedes naturally into the distance with correct foreshortening, consistent with the table's perspective</p>
+          <p>Soft natural bokeh on the park background — trees, grass, dappled sunlight — with depth-of-field falloff that matches the focal plane on the cartons</p>
+          <p>Lens compression and perspective distortion must be consistent across the entire frame — no warped horizon, no mismatched vanishing points between foreground and background</p>
+          <p>Lighting direction on the background must match the lighting direction on the foreground objects (warm sunlight from the same angle)</p>
+          <p>DEPTH OF FIELD:</p>
+          <p>Two white cartons = sharpest focus, hero</p>
+          <p>Glass of cocoa = near-sharp, slightly softer</p>
+          <p>Foreground (orange, plate, napkin, board, croissant) = softly blurred</p>
+          <p>Park background = soft natural bokeh</p>
+          <p>LIGHTING & ATMOSPHERE (from first image):</p>
+          <p>Warm natural outdoor sunlight</p>
+          <p>Soft dappled shadows from tree leaves on the wooden table</p>
+          <p>Consistent shadow direction across all objects</p>
+          <p>Premium commercial outdoor lighting</p>
+          <p>Cozy summer picnic mood</p>
+          <p>VISUAL STYLE: Ultra-realistic commercial product photography, premium summer picnic campaign, luxury lifestyle advertisement, cinematic shallow depth of field, editorial product photography, photorealistic rendering.</p>
+          <p>NEGATIVE PROMPT: glossy plastic carton, shiny carton, milk jug shape, rectangular brick carton, juice box with straw, generic packaging, wrong carton silhouette, solid red napkin, plain red cloth, non-checkered napkin, plain glass, smooth glass without pattern, tilted horizon, warped perspective, mismatched vanishing point, distorted background, skewed park, unrealistic lens distortion, text, logos, labels, branding, barcodes, annotations, UI elements, Blender interface, gizmos, wireframes, walnuts, second croissant, grapes, wicker basket, folding chair, white rose, blanket fringe, added props, moved objects, resized objects, changed composition, missing cartons, blurry cartons, artificial lighting, inconsistent shadows, CGI look, cartoon, duplicated objects, low quality, watermark.</p>
+        </div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add variable</span>
+        </footer>
+        <span class="port port-out prompt-port" data-port="prompt-picnic-out"></span>
+      </section>
+
+      <section class="node image-node model-node" data-node-id="model-gemini" style="--x: 1260px; --y: 170px">
+        <header class="node-header model-header">
+          <span class="spark"></span>
+          <span>Gemini 3 (Nano Banana Pro)</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-gemini"></div>
+        <footer class="node-footer split-footer">
+          <span><span class="plus">+</span> Add another image input</span>
+          <button class="run-button" type="button">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M5 12h13" />
+              <path d="m13 6 6 6-6 6" />
+            </svg>
+            <span>Run Model</span>
+          </button>
+        </footer>
+        <span class="port port-in prompt-in" data-port="gemini-prompt-in"></span>
+        <span class="port port-in port-stack-2" data-port="gemini-image-a-in"></span>
+        <span class="port port-in port-stack-3" data-port="gemini-image-b-in"></span>
+        <span class="port port-out" data-port="gemini-out"></span>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Picnic Product Canvas Prototype</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="workspace" id="workspace" aria-label="Picnic product generation canvas">
+      <svg class="connections" id="connections" aria-hidden="true"></svg>
+
+      <section class="node image-node" data-node-id="image-reference" style="--x: 120px; --y: 170px">
+        <header class="node-header">
+          <span>image.png</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-reference"></div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add more images</span>
+        </footer>
+        <span class="port port-out" data-port="image-reference-out"></span>
+      </section>
+
+      <section class="node image-node" data-node-id="image-layout" style="--x: 500px; --y: 170px">
+        <header class="node-header">
+          <span>image.png</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-layout"></div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add more images</span>
+        </footer>
+        <span class="port port-out" data-port="image-layout-out"></span>
+      </section>
+
+      <section class="node prompt-node" data-node-id="prompt-picnic" style="--x: 880px; --y: 170px">
+        <header class="node-header">
+          <span>Prompt</span>
+          <button class="icon-button copy-button" type="button" aria-label="Copy prompt" title="Copy prompt">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M8 8.5h8.5v10H8z" />
+              <path d="M5.5 15.5V5.5h8.5" />
+            </svg>
+          </button>
+        </header>
+        <div class="prompt-box">
+          <p>Use the first reference image as the exact base image. Use the second reference image only as the reference for the new rotation angle, visible side geometry, folded-top structure, and perspective of both white cartons.</p>
+          <p>Create one ultra-realistic commercial picnic product photo in vertical 9:16 format.</p>
+          <p>The main task is to keep the entire picnic scene from the first image unchanged. Only replace or adjust both white cartons so that they match the carton angle and 3D form shown in the second reference image.</p>
+          <p>There are two cartons in the second reference image. Both cartons must have their angle, side geometry, folded-top structure and perspective updated.</p>
+          <p>The black background from the second image must not appear in the final result. Ignore the black background completely. Only use the cartons themselves from the second image as the geometry, angle and perspective reference.</p>
+          <p>Everything from the first reference image must stay exactly the same: same camera framing, same vertical 9:16 composition, same wooden table, same glass with cocoa drink, same croissants, same wooden board, same fruit plate, same orange, same grapes, same napkin, same walnuts, same park background, same chair if visible, same basket if visible, same grass, same sunlight direction, same tree shadows, same depth of field, same object spacing, same object scale, and same atmosphere.</p>
+          <p>Do not move the table, glass, croissants, fruit plate, orange, grapes, walnuts, background objects, camera angle or composition. Do not add new objects, remove existing objects, add a black background, add text, labels, logos, branding or UI elements.</p>
+          <p>Only change the angle of both white cartons, the visible side geometry of both cartons, the folded-top structure of both cartons, and the realism of both carton materials if needed.</p>
+          <p>Replace both white cartons with cartons matching the second reference geometry. Both edited cartons must stay in the exact same positions on the table as in the first image, keep the same approximate scale and height relative to the surrounding objects, keep the same spacing between each other, keep realistic contact shadows under them, be rotated into the same three-quarter side angle shown in the second reference, show more visible side panels, show narrower front faces due to perspective, show the folded side geometry clearly, have the screw caps positioned and angled like in the second image, and feel physically integrated into the original picnic scene.</p>
+          <p>The front carton is the dominant hero carton in the foreground, larger in frame and in the strongest focus. It should use the same exact angle as the large carton in the second reference. The back carton is slightly smaller due to perspective, positioned behind the main carton, partially visible, and should use the same exact angle as the smaller rear carton in the second reference.</p>
+          <p>Both cartons should look like premium blank Tetra Pak-style drink cartons: matte white paper-based packaging, white plastic screw caps on top, realistic cap ridges, angled folded top corners, flat-topped peak structure, triangular folded side flaps visible near the top, crisp diagonal fold lines, subtle vertical seams, slightly softened paper edges, realistic paper surface texture, subtle paper wrinkles and crease shadows, clean blank surfaces, no text, no logo, no label, no barcode and no branding.</p>
+          <p>The new cartons should match the second image's angle and geometry, but the lighting, color temperature, shadows and material finish must match the first image.</p>
+          <p>Use the first image lighting exactly: warm natural sunlight, soft dappled shadows from trees, realistic shadow direction, soft highlights on the white caps, warm bounce light from the honey-oak wooden table, subtle shadows on the carton side panels, realistic ambient occlusion at the carton bases, no harsh studio lighting, no gray artificial shading and no pasted-object look.</p>
+          <p>The cartons must feel naturally integrated into the picnic photo: matte white paper surface, soft paper texture, natural outdoor highlights, realistic folded edges, realistic cap plastic material, correct perspective on all folds, correct shadows on the wooden table, correct reflection and ambient bounce from the warm table, no computer-generated image look and no floating objects.</p>
+          <p>The edited cartons must follow the original photo perspective: same table plane, same lens perspective, same vertical alignment, same vanishing direction, same scale relative to glass, croissant and fruit plate, no warped caps, no distorted cartons and no mismatch between the cartons and table surface.</p>
+          <p>Keep the original environment unchanged: green park background, trees and grass softly blurred, warm sunlight, cinematic natural bokeh, croissants on the right, glass with cocoa behind or near the cartons, fruit plate and orange in foreground, walnuts near the table edge, and cozy premium summer picnic atmosphere.</p>
+          <p>The visual style is ultra-realistic photo edit, premium commercial product photography, luxury summer picnic aesthetic, clean white packaging mockup, natural outdoor lighting, photorealistic integration, cinematic shallow depth of field, realistic food textures, realistic wood grain and high-end lifestyle advertisement.</p>
+          <p>The final image must look exactly like the first reference photo, except both white cartons are now rotated and shaped like the cartons shown in the second reference image.</p>
+          <p>Negative prompt: black background, gray background, pasted cartons, floating cartons, wrong shadows, mismatched lighting, changed composition, moved objects, rearranged objects, resized objects, changed camera angle, changed table layout, added objects, removed objects, extra cartons, text, logos, labels, branding, barcode, UI elements, annotations, distorted cartons, warped caps, wrong perspective, glossy plastic cartons, computer-generated image look, low quality, blurry main cartons, watermark.</p>
+        </div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add variable</span>
+        </footer>
+        <span class="port port-out prompt-port" data-port="prompt-picnic-out"></span>
+      </section>
+
+      <section class="node image-node model-node" data-node-id="model-gemini" style="--x: 1260px; --y: 170px">
+        <header class="node-header model-header">
+          <span class="spark"></span>
+          <span>Gemini 3 (Nano Banana Pro)</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-gemini"></div>
+        <footer class="node-footer split-footer">
+          <span><span class="plus">+</span> Add another image input</span>
+          <button class="run-button" type="button">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M5 12h13" />
+              <path d="m13 6 6 6-6 6" />
+            </svg>
+            <span>Run Model</span>
+          </button>
+        </footer>
+        <span class="port port-in prompt-in" data-port="gemini-prompt-in"></span>
+        <span class="port port-in port-stack-2" data-port="gemini-image-a-in"></span>
+        <span class="port port-in port-stack-3" data-port="gemini-image-b-in"></span>
+        <span class="port port-out" data-port="gemini-out"></span>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

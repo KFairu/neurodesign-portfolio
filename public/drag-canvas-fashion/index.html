@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fashion Angle Canvas Prototype</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="workspace" id="workspace" aria-label="Fashion angle generation canvas">
+      <svg class="connections" id="connections" aria-hidden="true"></svg>
+
+      <section class="node image-node image-large" data-node-id="image-base" style="--x: 96px; --y: 116px">
+        <header class="node-header">
+          <span>image.png</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-base"></div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add more images</span>
+        </footer>
+        <span class="port port-out" data-port="image-base-out"></span>
+      </section>
+
+      <section class="node image-node image-room-node" data-node-id="image-room-a" style="--x: 516px; --y: 116px">
+        <header class="node-header">
+          <span>image.png</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-room-a"></div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add more images</span>
+        </footer>
+        <span class="port port-out" data-port="image-room-a-out"></span>
+      </section>
+
+      <section class="node image-node image-room-node" data-node-id="image-room-b" style="--x: 516px; --y: 594px">
+        <header class="node-header">
+          <span>image.png</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-room-b"></div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add more images</span>
+        </footer>
+        <span class="port port-out" data-port="image-room-b-out"></span>
+      </section>
+
+      <section class="node prompt-node" data-node-id="prompt-fashion" style="--x: 936px; --y: 116px">
+        <header class="node-header">
+          <span>Prompt</span>
+          <button class="icon-button copy-button" type="button" aria-label="Copy prompt" title="Copy prompt">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M8 8.5h8.5v10H8z" />
+              <path d="M5.5 15.5V5.5h8.5" />
+            </svg>
+          </button>
+        </header>
+        <div class="prompt-box">
+          <p>Ultra-realistic fashion editorial photo edit. Use the first reference image as the exact base image.</p>
+          <p>Do not change the girl's pose, body position, facial expression, outfit, proportions, crouching pose, or composition from the original image.</p>
+          <p>The main task is to change only the camera position and environment perspective. The camera is now positioned directly in front of the girl at eye-level or a slightly low fashion-editorial angle, instead of the previous side-angle perspective.</p>
+          <p>The girl is sitting inside a minimalistic geometric room with differently colored walls and a white floor. Behind the girl there is a deep saturated red wall, in front of the girl there is a black wall, one side of the room is white, the opposite side is dark graphite, and the floor is pure white.</p>
+          <p>Only one wall must be visible in the final frame, exactly like the original fashion photo aesthetic. The room should feel physically correct and spatially consistent. Since the camera is positioned in front of the girl, the black wall is behind the camera, the red wall is visible behind the girl, and the side walls should only subtly influence lighting or reflections without dominating the frame.</p>
+          <p>The visual style is luxury minimalist fashion campaign, clean geometric architecture, Saint Laurent, Zara Studio and Vogue editorial aesthetic, seamless premium studio feeling, very subtle corners if any, soft cinematic shadows, glossy reflections on the leather jacket, and elegant negative space.</p>
+          <p>The lighting is soft diffused studio lighting with subtle ambient bounce from colored walls, premium editorial contrast, realistic skin tones, and ultra-clean white balance.</p>
+          <p>The camera is front-facing, with a 50mm high-fashion photography look, shallow depth of field, ultra-sharp focus on face and leather texture, and vertical composition.</p>
+          <p>Negative prompt: side angle, overhead angle, top-down camera, changed pose, different body position, distorted anatomy, extra limbs, cluttered room, visible furniture, windows, doors, low quality, computer-generated image artifacts, cartoon style, warped proportions, blurry face, text, watermark.</p>
+        </div>
+        <footer class="node-footer">
+          <span class="plus">+</span>
+          <span>Add variable</span>
+        </footer>
+        <span class="port port-out prompt-port" data-port="prompt-fashion-out"></span>
+      </section>
+
+      <section class="node image-node model-node model-gemini" data-node-id="model-gemini" style="--x: 1436px; --y: 116px">
+        <header class="node-header model-header">
+          <span class="spark"></span>
+          <span>Gemini 3 (Nano Banana Pro)</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-gemini"></div>
+        <footer class="node-footer split-footer">
+          <span><span class="plus">+</span> Add another image input</span>
+          <button class="run-button" type="button">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M5 12h13" />
+              <path d="m13 6 6 6-6 6" />
+            </svg>
+            <span>Run Model</span>
+          </button>
+        </footer>
+        <span class="port port-in prompt-in" data-port="gemini-prompt-in"></span>
+        <span class="port port-in port-stack-2" data-port="gemini-image-a-in"></span>
+        <span class="port port-in port-stack-3" data-port="gemini-image-b-in"></span>
+        <span class="port port-in port-stack-4" data-port="gemini-image-c-in"></span>
+        <span class="port port-out" data-port="gemini-out"></span>
+      </section>
+
+      <section class="node image-node model-node model-imagen" data-node-id="model-imagen" style="--x: 1436px; --y: 594px">
+        <header class="node-header model-header">
+          <img class="model-icon" src="./assets/chatgpt-icon.png" alt="" aria-hidden="true" />
+          <span>ChatGPT Imagen 2.0</span>
+          <button class="icon-button" type="button" aria-label="More options">...</button>
+        </header>
+        <div class="photo-frame photo-imagen"></div>
+        <footer class="node-footer split-footer">
+          <span><span class="plus">+</span> Add another image input</span>
+          <button class="run-button" type="button">
+            <svg aria-hidden="true" viewBox="0 0 24 24">
+              <path d="M5 12h13" />
+              <path d="m13 6 6 6-6 6" />
+            </svg>
+            <span>Run Model</span>
+          </button>
+        </footer>
+        <span class="port port-in prompt-in" data-port="imagen-prompt-in"></span>
+        <span class="port port-in port-stack-2" data-port="imagen-image-a-in"></span>
+        <span class="port port-in port-stack-3" data-port="imagen-image-b-in"></span>
+        <span class="port port-in port-stack-4" data-port="imagen-image-c-in"></span>
+        <span class="port port-out" data-port="imagen-out"></span>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
