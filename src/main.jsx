@@ -362,7 +362,18 @@ function ImageGallery({ gallery }) {
     .filter(Boolean)
     .map((variant) => `result-gallery--${variant}`)
     .join(" ");
+  const galleryVariants = (gallery.variant || "").split(/\s+/).filter(Boolean);
   const showCaptionsBelow = (gallery.variant || "").split(/\s+/).includes("captions-below");
+  const hasPairZoom = galleryVariants.includes("pairs");
+
+  const handleZoomMove = (event) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
+
+    event.currentTarget.style.setProperty("--zoom-x", `${x}%`);
+    event.currentTarget.style.setProperty("--zoom-y", `${y}%`);
+  };
 
   const openItem = (item) => {
     window.clearTimeout(closeTimerRef.current);
@@ -418,15 +429,24 @@ function ImageGallery({ gallery }) {
     <>
       <figure className={`result-gallery result-gallery--${gallery.items.length} ${variantClasses}`}>
         <div className="result-gallery-grid">
-          {gallery.items.map((item, index) => (
-            <figure className="result-gallery-unit" style={item.aspect ? { "--gallery-ratio": item.aspect } : undefined} key={`${item.src}-${index}`}>
-              <button className="result-gallery-item" type="button" onClick={() => openItem(item)}>
-                <img src={item.src} alt={item.alt} />
-                {!showCaptionsBelow && item.label && <span>{item.label}</span>}
-              </button>
-              {showCaptionsBelow && item.label && <figcaption>{item.label}</figcaption>}
-            </figure>
-          ))}
+          {gallery.items.map((item, index) => {
+            const isPairLead = hasPairZoom && index % 2 === 0;
+
+            return (
+              <figure className="result-gallery-unit" style={item.aspect ? { "--gallery-ratio": item.aspect } : undefined} key={`${item.src}-${index}`}>
+                <button
+                  className={`result-gallery-item ${isPairLead ? "result-gallery-item--detail-zoom" : ""}`}
+                  type="button"
+                  onClick={() => openItem(item)}
+                  onMouseMove={isPairLead ? handleZoomMove : undefined}
+                >
+                  <img src={item.src} alt={item.alt} />
+                  {!showCaptionsBelow && item.label && <span>{item.label}</span>}
+                </button>
+                {showCaptionsBelow && item.label && <figcaption>{item.label}</figcaption>}
+              </figure>
+            );
+          })}
         </div>
         {gallery.caption && <figcaption>{gallery.caption}</figcaption>}
       </figure>

@@ -984,6 +984,23 @@ figcaption {
   transform: none;
 }
 
+.result-gallery-item--detail-zoom {
+  --zoom-x: 50%;
+  --zoom-y: 50%;
+}
+
+.result-gallery-item--detail-zoom img {
+  transform-origin: var(--zoom-x) var(--zoom-y);
+  transition: transform 220ms ease;
+  will-change: transform;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .result-gallery-item--detail-zoom:hover img {
+    transform: scale(3);
+  }
+}
+
 .result-gallery-item span {
   position: absolute;
   left: 10px;
