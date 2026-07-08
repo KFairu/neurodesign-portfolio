@@ -918,6 +918,12 @@ figcaption {
   width: 100%;
 }
 
+.result-gallery--pairs .result-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
 .result-gallery-unit {
   min-width: 0;
   margin: 0;
@@ -1667,6 +1673,11 @@ figcaption span,
 
   .result-gallery--equal-height .result-gallery-grid {
     display: grid;
+    gap: 18px;
+  }
+
+  .result-gallery--pairs .result-gallery-grid {
+    grid-template-columns: 1fr;
     gap: 18px;
   }
 
