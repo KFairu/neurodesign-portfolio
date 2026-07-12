@@ -543,6 +543,7 @@ function Header({ language, setLanguage, copy }) {
         <a className="active" href="/">
           {copy.blog}
         </a>
+        <a href="/neutral-wb">WB Fix</a>
       </nav>
       <div className="header-actions">
         <div className="language-toggle" aria-label="Выбор языка">
@@ -1158,6 +1159,22 @@ function Footer({ copy }) {
   );
 }
 
+function PluginPreviewPage() {
+  return (
+    <main className="plugin-preview-page">
+      <header className="plugin-preview-header">
+        <a href="/" className="plugin-preview-back">Вернуться в портфолио</a>
+        <span>Neutral WB / Yellow Cast Fix</span>
+      </header>
+      <iframe
+        className="plugin-preview-frame"
+        src="/neutral-wb/index.html"
+        title="Neutral WB / Yellow Cast Fix"
+      />
+    </main>
+  );
+}
+
 function App() {
   const [language, setLanguage] = useState("ru");
   const [toastVisible, setToastVisible] = useState(false);
@@ -1200,6 +1217,10 @@ function App() {
       });
     };
   }, []);
+
+  if (pathname === "/neutral-wb") {
+    return <PluginPreviewPage />;
+  }
 
   return (
     <>

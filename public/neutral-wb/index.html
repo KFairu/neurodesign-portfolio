@@ -1,0 +1,2106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neutral WB / Yellow Cast Fix</title>
+<style>
+:root{
+  --bg:#EEF1F5;
+  --card-bg:#FFFFFF;
+  --border:#DEE3EA;
+  --border-light:#E8ECF1;
+  --accent:#1C1C1A;
+  --muted:#8E96A3;
+  --muted2:#B8C0CA;
+  --tag-bg:#F1F4F7;
+  --input-bg:#F5F7FA;
+  --slider-track:#E6EAF0;
+  --slider-fill:#B8C0CA;
+  --control-accent:#1C1C1A;
+  --white:#FFFFFF;
+  --panel-w:320px;
+  --ok:#3A7A2E;
+  --danger:#C03636;
+  --header-bg:#FFFFFF;
+  --preview-bg:#F4F6F9;
+}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{
+  width:100%;height:100%;
+  background:var(--bg);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--accent);
+  overflow:hidden;
+}
+body.dark{
+  --bg:#171717;
+  --card-bg:#222222;
+  --border:rgba(255,255,255,.08);
+  --border-light:rgba(255,255,255,.05);
+  --accent:#F2F2F0;
+  --muted:rgba(255,255,255,.58);
+  --muted2:rgba(255,255,255,.34);
+  --tag-bg:#2B2B2B;
+  --input-bg:#292929;
+  --slider-track:#383838;
+  --slider-fill:#777C82;
+  --control-accent:#969BA1;
+  --white:#F1EEE8;
+  --header-bg:#202020;
+  --preview-bg:#191919;
+}
+
+button{font-family:inherit;}
+
+#app-shell{
+  width:100vw;height:100vh;
+  display:flex;
+  padding:0;background:var(--bg);
+}
+
+#plugin-window{
+  width:100%;
+  height:100%;
+  background:var(--card-bg);
+  border:none;
+  border-radius:0;
+  box-shadow:none;
+  overflow:hidden;
+  display:flex;flex-direction:column;
+}
+
+#plugin-header{
+  height:43px;flex-shrink:0;
+  display:flex;align-items:center;gap:10px;
+  padding:10px 16px;
+  background:var(--header-bg);
+  border-bottom:1px solid var(--border);
+}
+body #plugin-header{display:none;}
+.brand-mark{
+  width:22px;height:22px;border-radius:6px;background:var(--accent);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.brand-title{font-size:12px;font-weight:600;color:var(--accent);}
+.header-spacer{flex:1;}
+.icon-btn{
+  width:28px;height:28px;border-radius:7px;border:1px solid var(--border);
+  background:var(--tag-bg);color:var(--muted);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:background .13s,border-color .13s,color .13s;
+}
+.icon-btn:hover{border-color:var(--muted2);color:var(--accent);}
+.close-btn{width:26px;height:26px;background:transparent;border-color:transparent;}
+#selection-count{font-size:10px;color:var(--muted2);margin-left:4px;white-space:nowrap;}
+
+#plugin-body{flex:1;display:flex;overflow:hidden;}
+
+#canvas-area{
+  flex:1;min-width:0;height:100%;
+  display:flex;flex-direction:column;
+  position:relative;overflow:hidden;background:var(--preview-bg);
+}
+
+#preview-toolbar{
+  min-height:52px;flex-shrink:0;
+  display:flex;align-items:center;gap:8px;
+  padding:8px 14px;
+  background:var(--header-bg);
+  border-bottom:1px solid var(--border);
+}
+.segmented{display:flex;align-items:center;padding:3px;border:1px solid var(--border);border-radius:8px;background:var(--tag-bg);gap:2px;}
+.segment-btn{height:28px;padding:0 11px;border:0;border-radius:6px;background:transparent;color:var(--muted);font-size:10.5px;font-weight:600;cursor:pointer;white-space:nowrap;}
+.segment-btn.active{background:var(--accent);color:var(--card-bg);}
+body.dark .segment-btn.active{color:#171717;}
+.toolbar-divider{width:1px;height:24px;background:var(--border);margin:0 2px;}
+.toolbar-meta{display:flex;align-items:center;gap:8px;margin-left:auto;min-width:0;}
+.toolbar-status{margin-left:0;}
+.toolbar-count{font-size:10px;color:var(--muted2);white-space:nowrap;}
+.mode-btn{
+  width:30px;height:28px;border-radius:7px;
+  border:1px solid var(--border);background:transparent;color:var(--muted);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .13s;
+}
+.mode-btn.active{background:var(--accent);border-color:var(--accent);color:var(--card-bg);}
+.toolbar-status{
+  margin-left:auto;
+  display:flex;align-items:center;gap:7px;
+  font-size:10px;color:var(--muted);
+}
+
+#canvas-wrap{
+  flex:1;min-height:0;width:100%;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;position:relative;overflow:hidden;
+}
+#canvas-wrap.picker-active{cursor:crosshair;}
+#canvas-wrap.picker-active #compare-card,#canvas-wrap.picker-active .split-pane{cursor:crosshair;}
+.picker-notice{display:none;position:absolute;left:50%;top:18px;transform:translateX(-50%);z-index:40;width:min(440px,calc(100% - 40px));padding:12px 14px;border-radius:9px;background:rgba(25,25,25,.94);border:1px solid rgba(255,255,255,.12);box-shadow:0 10px 30px rgba(0,0,0,.25);color:rgba(255,255,255,.9);font-size:11px;line-height:1.45;pointer-events:none;}
+.picker-notice strong{display:block;margin-bottom:3px;font-size:12px;}
+.picker-notice.show{display:block;}
+.sample-marker{display:none;position:absolute;width:22px;height:22px;border:2px solid var(--accent);border-radius:50%;z-index:41;box-shadow:0 0 0 2px rgba(0,0,0,.5);pointer-events:none;transform:translate(-50%,-50%);}
+
+#compare-card{
+  width:100%;height:100%;
+  border-radius:14px;
+  position:relative;
+  overflow:hidden;
+  background:var(--preview-bg);
+  cursor:col-resize;
+  user-select:none;
+}
+
+.compare-img{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:contain;object-position:center;
+  background:var(--preview-bg);
+  user-select:none;pointer-events:none;
+  transform:translate(var(--preview-pan-x,0px),var(--preview-pan-y,0px)) scale(var(--preview-zoom,1));
+  transform-origin:center center;
+  transition:transform .12s;
+}
+
+#before-layer{
+  position:absolute;inset:0;
+  clip-path:inset(0 46% 0 0);
+  overflow:hidden;z-index:2;
+}
+
+.compare-label{
+  position:absolute;top:12px;z-index:5;
+  padding:3px 8px;border-radius:5px;
+  color:white;font-size:10px;font-weight:700;
+  background:rgba(0,0,0,.48);
+  backdrop-filter:blur(4px);
+  letter-spacing:.04em;text-transform:uppercase;
+  line-height:1.3;
+}
+.compare-label.before{left:12px;}
+.compare-label.after{right:12px;}
+
+#compare-handle{
+  position:absolute;top:0;bottom:0;left:54%;
+  width:1.5px;background:rgba(255,255,255,.88);z-index:4;
+  box-shadow:0 0 8px rgba(0,0,0,.28);
+  transform:translateX(-.75px);pointer-events:none;
+}
+#compare-handle::after{
+  content:"";position:absolute;top:50%;left:50%;
+  width:36px;height:36px;border-radius:50%;
+  background:white;border:none;
+  box-shadow:0 2px 12px rgba(0,0,0,.22);
+  transform:translate(-50%,-50%);
+}
+#compare-handle::before{
+  content:"";position:absolute;top:50%;left:50%;
+  width:16px;height:10px;z-index:1;
+  transform:translate(-50%,-50%);
+  background:linear-gradient(90deg,transparent 0 30%,#666 30% 36%,transparent 36% 64%,#666 64% 70%,transparent 70%);
+}
+#compare-range{
+  position:absolute;inset:0;width:100%;height:100%;
+  opacity:0;z-index:6;pointer-events:none;
+}
+
+#split-card{
+  display:none;width:100%;height:100%;
+  gap:12px;background:transparent;
+}
+.split-pane{
+  flex:1;min-width:0;height:100%;
+  position:relative;overflow:hidden;
+  border-radius:14px;background:var(--preview-bg);
+}
+.split-pane img{
+  width:100%;height:100%;object-fit:contain;display:block;
+  transform:translate(var(--preview-pan-x,0px),var(--preview-pan-y,0px)) scale(var(--preview-zoom,1));
+  transform-origin:center center;
+  transition:transform .12s;
+}
+.split-pane .compare-label{left:12px;right:auto;top:12px;}
+
+#thumb-footer{
+  flex-shrink:0;background:var(--header-bg);
+  border-top:1px solid var(--border);
+  padding:10px 14px;
+}
+.thumb-footer-inner{display:flex;align-items:center;gap:10px;min-width:0;}
+#thumb-strip{
+  display:flex;gap:7px;
+  overflow-x:auto;flex-shrink:0;max-width:58%;
+  padding:3px;
+}
+#thumb-strip::-webkit-scrollbar{height:3px;}
+#thumb-strip::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px;}
+.thumb{
+  width:56px;height:56px;flex:0 0 auto;
+  border:1px solid var(--border);outline:0 solid transparent;outline-offset:2px;
+  border-radius:9px;background:white;
+  overflow:hidden;position:relative;cursor:pointer;
+  transition:opacity .15s,outline .1s;
+  opacity:.55;
+}
+.thumb.active{opacity:1;outline:2.5px solid var(--accent);}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+.thumb span{
+  position:absolute;left:4px;bottom:4px;
+  min-width:18px;padding:1px 5px;
+  border-radius:4px;background:rgba(0,0,0,.55);
+  color:white;font-size:9px;font-weight:700;line-height:1.35;text-align:center;
+}
+.thumb-divider{width:1px;height:32px;background:var(--border);flex-shrink:0;}
+.thumb-help{font-size:9.5px;color:var(--muted2);line-height:1.55;min-width:160px;}
+
+#zoom-bar{
+  display:flex;align-items:center;gap:2px;position:static;z-index:1;
+  transform:none;
+  height:34px;padding:2px 7px;background:var(--card-bg);border:1px solid var(--border);border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.06);flex-shrink:0;
+}
+#zoom-row{height:42px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:transparent;}
+
+.dot{width:7px;height:7px;border-radius:50%;background:var(--muted2);}
+.dot.busy{background:var(--accent);animation:pulse 1s infinite;}
+.dot.ok{background:var(--ok);}
+@keyframes pulse{50%{opacity:.35;}}
+
+#zoom-bar button{
+  width:28px;height:28px;border:none;background:transparent;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;border-radius:50%;
+  color:var(--accent);transition:background .12s;flex-shrink:0;font-size:17px;
+}
+#zoom-bar button:hover{background:var(--tag-bg);}
+#zoom-label{
+  font-size:11px;color:var(--accent);min-width:42px;text-align:center;
+}
+#canvas-wrap.zoomed #compare-card,#canvas-wrap.zoomed .split-pane{cursor:grab;}
+#canvas-wrap.panning #compare-card,#canvas-wrap.panning .split-pane{cursor:grabbing;}
+.zoom-divider{width:1px;height:14px;background:var(--border);margin:0 2px;}
+
+#settings-panel{
+  width:var(--panel-w);height:100%;
+  display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;
+  background:var(--bg);z-index:10;border-left:1px solid var(--border);
+}
+
+#panel-scroll{flex:1;overflow-y:auto;padding:10px 10px 0;background:transparent;scrollbar-width:none;}
+#panel-scroll::-webkit-scrollbar{width:3px;}
+#panel-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px;}
+
+.auto-card{
+  background:var(--card-bg);
+  border:1px solid var(--border);
+  border-radius:12px;
+  margin-bottom:6px;
+  box-shadow:0 1px 3px rgba(0,0,0,.05);
+  padding:12px 14px 14px;
+}
+.auto-card .action-main{width:100%;margin-bottom:14px;}
+.sec-block{
+  background:var(--card-bg);
+  border:1px solid var(--border);
+  border-radius:12px;
+  margin-bottom:6px;
+  box-shadow:0 1px 3px rgba(0,0,0,.05);
+  overflow:hidden;
+}
+.sec-head{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 14px 11px 12px;
+  cursor:pointer;
+}
+.sec-icon{
+  width:28px;height:28px;background:var(--tag-bg);
+  border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.sec-title-row{display:flex;align-items:center;gap:7px;flex:1;min-width:0;}
+.sec-label{font-size:12px;font-weight:600;}
+.sec-chevron{color:var(--muted2);transition:transform .15s;flex-shrink:0;}
+.sec-block.closed .sec-chevron{transform:rotate(-90deg);}
+.sec-body{padding:0 14px 16px;border-top:1px solid var(--border-light);}
+.sec-block.closed .sec-body{display:none;}
+
+.field-label{
+  font-size:10px;font-weight:600;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.06em;
+  margin:16px 0 8px;
+}
+.tag-row{display:flex;gap:5px;flex-wrap:wrap;}
+#preset-tags{flex-wrap:nowrap;}
+#preset-tags .tag{flex:1;padding-left:0;padding-right:0;}
+.tag{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:7px 14px;border-radius:10px;background:var(--card-bg);
+  font-size:11.5px;font-weight:500;cursor:pointer;color:#6F7782;
+  border:1.5px solid var(--border);transition:all .14s;line-height:1;
+  box-shadow:0 1px 2px rgba(0,0,0,.04);
+}
+.tag:hover{border-color:var(--muted2);color:var(--accent);}
+.tag.active{background:var(--accent);color:white;border-color:var(--accent);box-shadow:0 2px 6px rgba(28,28,26,.18);}
+body.dark .tag.active{color:#171717;}
+.tag svg{flex-shrink:0;}
+
+.control-group{margin-top:14px;}
+.ctrl-label{
+  display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+  font-size:10px;font-weight:600;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;
+}
+.ctrl-label span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ctrl-value{font-family:Inter,system-ui,sans-serif;color:var(--accent);font-size:10px;flex-shrink:0;}
+.slider-wrap{position:relative;width:100%;height:18px;display:flex;align-items:center;}
+input[type="range"]{
+  width:100%;height:4px;border-radius:2px;appearance:none;outline:none;cursor:pointer;
+  background:linear-gradient(to right,var(--slider-fill) 0%,var(--slider-fill) var(--fill,0%),var(--slider-track) var(--fill,0%),var(--slider-track) 100%);
+}
+input[type="range"]::-webkit-slider-thumb{
+  appearance:none;width:15px;height:15px;background:var(--control-accent);
+  border-radius:50%;cursor:pointer;border:2.5px solid white;
+  box-shadow:0 1px 4px rgba(0,0,0,.24);
+}
+
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0;margin:12px 0 0;gap:12px;}
+.toggle-label{font-size:12px;font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.toggle{
+  width:34px;height:19px;background:var(--slider-track);border-radius:10px;position:relative;cursor:pointer;
+  transition:background .2s;flex-shrink:0;
+}
+.toggle.on{background:var(--accent);}
+.toggle::after{
+  content:"";position:absolute;top:2.5px;left:2.5px;width:14px;height:14px;background:white;border-radius:50%;
+  transition:transform .18s;box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.toggle.on::after{transform:translateX(15px);}
+
+.panel-footer{padding:10px 10px 12px;flex-shrink:0;background:transparent;}
+.footer-grid{display:flex;gap:6px;}
+.action-main,.action-secondary{
+  height:44px;border-radius:10px;font-family:Inter,system-ui,sans-serif;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:opacity .15s,background .15s,color .15s,border-color .15s;
+}
+.action-main{background:var(--accent);color:var(--card-bg);border:none;font-size:13px;font-weight:600;flex:1;}
+body.dark .action-main{color:#171717;}
+.action-main:hover:not(:disabled){opacity:.82;}
+.action-main:disabled{opacity:.55;cursor:wait;}
+.action-secondary{background:var(--card-bg);color:var(--muted);border:1px solid var(--border);font-size:11px;font-weight:600;}
+.action-secondary:hover{background:var(--tag-bg);}
+.copy-btn{width:44px;flex:0 0 44px;}
+
+#loader,#empty-state{
+  position:absolute;inset:52px 0 0 0;background:var(--preview-bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:100;transition:opacity .4s;text-align:center;padding:40px;
+}
+.loader-spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .75s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loader-text{margin-top:12px;font-size:10px;font-weight:500;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;}
+#empty-state{display:none;}
+.empty-box{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:28px 32px;max-width:420px;}
+.empty-title{font-size:13px;font-weight:600;color:var(--accent);margin-bottom:10px;}
+.empty-body{font-size:11px;color:var(--muted);line-height:1.7;}
+.manual-tools{display:none;}
+body.manual-mode .manual-tools{display:block;}
+.auto-only{display:block;}
+body.manual-mode .auto-only{display:none;}
+.strength-wrap{display:block;}
+body.manual-mode:not(.manual-ready) .strength-wrap{opacity:.34;pointer-events:none;}
+body.manual-mode:not(.manual-ready) #panel-scroll > .sec-block{display:none;}
+.tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.tool-btn{min-height:38px;padding:7px 9px;border-radius:8px;border:1px solid var(--border);background:var(--tag-bg);color:var(--accent);font-size:10.5px;font-weight:600;cursor:pointer;}
+.tool-btn.active{background:var(--accent);color:#171717;border-color:var(--accent);}
+.manual-only{display:none;}
+body.manual-mode.manual-ready .manual-only{display:block;}
+.grain-presets{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px;}
+.sec-icon.text-icon{font-size:8px;font-weight:700;letter-spacing:0;width:28px;overflow:hidden;}
+.color-group{margin-top:14px;padding-top:2px;}
+.color-group + .color-group{margin-top:18px;padding-top:14px;border-top:1px solid var(--border-light);}
+.color-group-title{display:flex;align-items:center;gap:8px;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:2px;}
+.color-swatch{width:14px;height:14px;border-radius:50%;background:var(--swatch);box-shadow:inset 0 0 0 2px rgba(0,0,0,.09);}
+#input-yellowHue{background:linear-gradient(to right,#D77B31,#E2C331 50%,#90BE45)!important;}
+#input-skinVitality{background:linear-gradient(to right,#AFA9A5,#D89A79 50%,#E8784E)!important;}
+#input-yellowSaturation{background:linear-gradient(to right,#B8B6AD,#D5BC43 50%,#F0CA00)!important;}
+#input-yellowLuminance{background:linear-gradient(to right,#4B3910,#D3B638 50%,#FFF1A2)!important;}
+#input-orangeHue{background:linear-gradient(to right,#C54D39,#DC812F 50%,#E5BA3C)!important;}
+#input-orangeSaturation{background:linear-gradient(to right,#B7ADA8,#D7823C 50%,#F06C13)!important;}
+#input-orangeLuminance{background:linear-gradient(to right,#512719,#D27A38 50%,#FFD0A6)!important;}
+#input-greenPrimaryHue{background:linear-gradient(to right,#9BAD3B,#4E9B63 50%,#3AA6A0)!important;}
+#input-greenPrimarySaturation{background:linear-gradient(to right,#AEB5B1,#57966B 50%,#168D4C)!important;}
+#input-bluePrimaryHue{background:linear-gradient(to right,#39A6B5,#5475C1 50%,#8250BA)!important;}
+#input-bluePrimarySaturation{background:linear-gradient(to right,#AEB3BC,#5A74B3 50%,#315BD1)!important;}
+#input-temperature{background:linear-gradient(to right,#5B83C7,#B7C3CE 50%,#E3A35A)!important;}
+#input-tint{background:linear-gradient(to right,#58A36E,#B8BEC2 50%,#B866A5)!important;}
+#input-saturation{background:linear-gradient(to right,#AEB4B8,#9DA1A4 38%,#D76A58 62%,#D8B43F 75%,#4B9E75 88%,#5577C8)!important;}
+#input-blueProtection{background:linear-gradient(to right,#3678D5,#67A9CF 42%,#A8B7C1 72%,#D8DDE1)!important;}
+#input-magentaProtection{background:linear-gradient(to right,#A7499D,#8264B0 42%,#ACAAB8 72%,#D8DDE1)!important;}
+
+@media(max-width:900px){
+  #app-shell{padding:0;}
+  #settings-panel{width:300px;}
+  :root{--panel-w:300px;}
+  .tag{padding:8px 10px;}
+}
+
+/* Browser edition: the editor stays hidden until the first photo arrives. */
+body.browser-app:not(.browser-ready) #app-shell{visibility:hidden;}
+#browser-upload{
+  position:fixed;inset:0;z-index:100;
+  display:flex;align-items:center;justify-content:center;
+  padding:28px;background:#F4F6F9;color:#1C1C1A;
+}
+body.browser-ready #browser-upload{display:none;}
+.upload-card{width:min(640px,100%);text-align:center;}
+.upload-mark{width:42px;height:42px;border-radius:12px;background:#1C1C1A;color:#fff;margin:0 auto 18px;display:grid;place-items:center;}
+.upload-title{font-size:28px;line-height:1.16;letter-spacing:0;font-weight:680;margin-bottom:10px;}
+.upload-copy{max-width:480px;margin:0 auto 24px;color:#707986;font-size:14px;line-height:1.55;}
+.upload-drop{
+  position:relative;display:flex;min-height:230px;align-items:center;justify-content:center;flex-direction:column;
+  border:1px dashed #B9C1CD;border-radius:16px;background:#fff;cursor:pointer;transition:.16s ease;
+}
+.upload-drop:hover,.upload-drop.dragging{border-color:#1C1C1A;background:#FAFBFC;transform:translateY(-1px);}
+.upload-drop-icon{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#F0F3F6;margin-bottom:13px;color:#1C1C1A;}
+.upload-drop strong{font-size:14px;font-weight:650;}.upload-drop span{margin-top:6px;color:#87909C;font-size:12px;}
+.upload-actions{display:flex;justify-content:center;gap:10px;margin-top:14px;}
+.upload-action{height:38px;padding:0 15px;border:1px solid #D9E0E8;border-radius:9px;background:#fff;color:#1C1C1A;font:600 12px inherit;cursor:pointer;}
+.upload-action.primary{background:#1C1C1A;border-color:#1C1C1A;color:#fff;}
+.upload-trial{margin-top:18px;color:#7C8591;font-size:11px;line-height:1.45;}
+.browser-toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,18px);z-index:120;opacity:0;pointer-events:none;padding:10px 13px;border-radius:9px;background:#1C1C1A;color:#fff;font-size:12px;box-shadow:0 12px 32px rgba(0,0,0,.2);transition:.18s ease;}
+.browser-toast.show{opacity:1;transform:translate(-50%,0);}
+.add-photo-thumb{width:56px;height:56px;flex:0 0 auto;border-radius:9px;border:1px dashed var(--border);background:transparent;color:var(--muted);font-size:24px;cursor:pointer;}
+.add-photo-thumb:hover{border-color:var(--accent);color:var(--accent);}
+#trial-dialog{display:none;position:fixed;inset:0;z-index:130;background:rgba(22,25,29,.42);align-items:center;justify-content:center;padding:20px;}
+#trial-dialog.show{display:flex;}.trial-dialog-card{width:min(420px,100%);padding:26px;border-radius:16px;background:#fff;box-shadow:0 24px 70px rgba(0,0,0,.24);}
+.trial-dialog-card h2{font-size:20px;line-height:1.25;margin-bottom:8px;}.trial-dialog-card p{color:#707986;font-size:13px;line-height:1.5;margin-bottom:20px;}.trial-dialog-actions{display:flex;gap:8px;justify-content:flex-end;}.trial-dialog-actions button,.trial-dialog-actions a{height:36px;padding:0 13px;border-radius:8px;border:1px solid #D9E0E8;background:#fff;color:#1C1C1A;text-decoration:none;display:inline-flex;align-items:center;font:600 12px inherit;cursor:pointer;}.trial-dialog-actions .primary{background:#1C1C1A;border-color:#1C1C1A;color:#fff;}
+</style>
+</head>
+<body class="browser-app">
+<section id="browser-upload" aria-label="Загрузка фотографии">
+  <div class="upload-card">
+    <div class="upload-mark">◌</div>
+    <h1 class="upload-title">Коррекция баланса белого</h1>
+    <p class="upload-copy">Откройте фотографию, чтобы убрать желтый оттенок, сохранить естественный тон кожи и проверить результат в сравнении «До / После».</p>
+    <div class="upload-drop" id="upload-drop" role="button" tabindex="0" onclick="openImagePicker()">
+      <div class="upload-drop-icon">↑</div>
+      <strong>Перетащите фото сюда</strong>
+      <span>или выберите файл с компьютера</span>
+    </div>
+    <div class="upload-actions">
+      <button class="upload-action primary" onclick="openImagePicker()">Открыть фото</button>
+      <button class="upload-action" onclick="navigator.clipboard?.read ? pasteFromClipboard() : notify('Используйте Ctrl/Cmd + V, чтобы вставить фото')">Вставить из буфера</button>
+    </div>
+    <p class="upload-trial">В браузерной версии доступно до 5 обработанных фотографий. Изображения не отправляются на сервер.</p>
+    <input id="image-file-input" type="file" accept="image/png,image/jpeg,image/webp" multiple hidden onchange="ingestFiles(this.files)">
+  </div>
+</section>
+<div id="trial-dialog" role="dialog" aria-modal="true" aria-labelledby="trial-title">
+  <div class="trial-dialog-card">
+    <h2 id="trial-title">Пробный лимит завершен</h2>
+    <p>В браузерной версии доступно 5 обработанных фотографий. Для доступа к Figma-плагину без ограничений напишите нам, чтобы уточнить детали.</p>
+    <div class="trial-dialog-actions"><button onclick="hideTrialDialog()">Закрыть</button><a class="primary" href="https://kfayportfolio.vercel.app" target="_blank" rel="noreferrer">Уточнить детали</a></div>
+  </div>
+</div>
+<div id="browser-toast" class="browser-toast" aria-live="polite"></div>
+<div id="app-shell">
+  <div id="plugin-window">
+    <div id="plugin-header">
+      <div class="brand-mark">
+        <svg width="11" height="11" viewBox="0 0 13 13" fill="none">
+          <circle cx="6.5" cy="6.5" r="4.5" stroke="var(--card-bg)" stroke-width="1.4"/>
+          <circle cx="6.5" cy="6.5" r="1.8" fill="var(--card-bg)"/>
+        </svg>
+      </div>
+      <span class="brand-title">Neutral WB</span>
+      <div class="header-spacer"></div>
+      <button class="icon-btn" onclick="toggleTheme()" title="Тема">
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M11.4 8.3A4.8 4.8 0 0 1 5.7 2.6 5 5 0 1 0 11.4 8.3Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+      </button>
+      <span id="legacy-selection-count">0 фото выбрано</span>
+      <button class="icon-btn close-btn" onclick="post('close')" title="Закрыть">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3.5 3.5l7 7M10.5 3.5l-7 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <div id="plugin-body">
+      <div id="canvas-area">
+        <div id="loader">
+          <div class="loader-spinner"></div>
+          <p class="loader-text">Ожидание изображений из Figma...</p>
+        </div>
+
+        <div id="empty-state">
+          <div class="empty-box">
+            <div class="empty-title">Нет выбранных изображений</div>
+            <div class="empty-body">Выберите один или несколько слоев с IMAGE-заливкой и запустите плагин снова.</div>
+          </div>
+        </div>
+
+        <div id="preview-toolbar">
+          <div class="segmented" aria-label="Режим обработки">
+            <button class="segment-btn active" data-work-mode="auto" onclick="setWorkMode('auto',this)">Автоматический</button>
+            <button class="segment-btn" data-work-mode="manual" onclick="setWorkMode('manual',this)">Пользовательский</button>
+          </div>
+          <div class="toolbar-divider"></div>
+          <button class="mode-btn" data-mode="split" onclick="setCompareMode('split',this)" title="Сравнение рядом">
+            <svg width="13" height="11" viewBox="0 0 16 14" fill="none">
+              <rect x=".75" y=".75" width="6" height="12.5" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+              <rect x="9.25" y=".75" width="6" height="12.5" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+            </svg>
+          </button>
+          <button class="mode-btn active" data-mode="slider" onclick="setCompareMode('slider',this)" title="Слайдер">
+            <svg width="13" height="11" viewBox="0 0 16 14" fill="none">
+              <rect x=".75" y=".75" width="14.5" height="12.5" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+              <line x1="8" y1="1.5" x2="8" y2="12.5" stroke="currentColor" stroke-width="1.2"/>
+              <path d="M5.5 7H3.5M3.5 7L5 5.5M3.5 7L5 8.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M10.5 7H12.5M12.5 7L11 5.5M12.5 7L11 8.5" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="toolbar-meta">
+            <div class="toolbar-status"><span class="dot" id="status-dot"></span><span id="status-text">Готово</span></div>
+            <span class="toolbar-count" id="selection-count">0 фото выбрано</span>
+            <button class="icon-btn" onclick="toggleTheme()" title="Светлая или темная тема">
+              <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M11.4 8.3A4.8 4.8 0 0 1 5.7 2.6 5 5 0 1 0 11.4 8.3Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div id="canvas-wrap">
+          <div id="picker-notice" class="picker-notice"><strong id="picker-title">Выберите участок кожи</strong><span id="picker-copy">Кликните по равномерно освещенной коже без сильного блика или глубокой тени. Лучше выбрать щеку, лоб, шею, плечо или руку. Esc — отменить.</span></div>
+          <div id="sample-marker" class="sample-marker"></div>
+          <div id="compare-card">
+            <img id="after-img" class="compare-img" alt="">
+            <div id="before-layer"><img id="before-img" class="compare-img" alt=""></div>
+            <div class="compare-label before">До</div>
+            <div class="compare-label after">После</div>
+            <div id="compare-handle"></div>
+            <input id="compare-range" type="range" min="0" max="100" value="54" aria-label="Сравнение до и после">
+          </div>
+          <div id="split-card">
+            <div class="split-pane">
+              <img id="split-before" alt="">
+              <div class="compare-label">До</div>
+            </div>
+            <div class="split-pane">
+              <img id="split-after" alt="">
+              <div class="compare-label after">После</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="zoom-row">
+          <div id="zoom-bar" title="Горячие клавиши: ⌘/Ctrl + +, ⌘/Ctrl + -, ⌘/Ctrl + 0">
+            <button onclick="adjustPreviewZoom(-0.15)" aria-label="Уменьшить">−</button>
+            <span id="zoom-label">100%</span>
+            <button onclick="adjustPreviewZoom(0.15)" aria-label="Увеличить">+</button>
+            <span class="zoom-divider"></span>
+            <button onclick="resetPreviewZoom()" aria-label="Вписать фотографию" title="Вписать">↺</button>
+          </div>
+        </div>
+
+        <div id="thumb-footer">
+          <div class="thumb-footer-inner">
+            <div id="thumb-strip"></div>
+            <div class="thumb-divider"></div>
+            <p class="thumb-help">Предпросмотр оптимизирован для скорости.<br>Финальное сохранение — в полном качестве.</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="settings-panel">
+        <div id="panel-scroll">
+          <div class="auto-card">
+            <button class="action-main auto-only" id="auto-btn" onclick="autoFix()">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1.5L8.2 5.5H12.5L9 8L10.2 12L7 9.5L3.8 12L5 8L1.5 5.5H5.8Z" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Автоисправление
+            </button>
+            <div class="manual-tools">
+              <div class="field-label" style="margin:0 0 8px;">Сначала выберите ориентир цвета</div>
+              <div class="tool-grid">
+                <button class="tool-btn" data-picker="skin" onclick="startPicker('skin',this)">Пипетка по коже</button>
+                <button class="tool-btn" data-picker="neutral" onclick="startPicker('neutral',this)">Нейтральная область</button>
+              </div>
+            </div>
+            <div class="strength-wrap">
+              <div class="field-label" style="margin-top:12px;">Сила удаления желтизны</div>
+              <div class="tag-row" id="preset-tags"></div>
+            </div>
+          </div>
+
+          <div class="sec-block closed grain-section">
+            <div class="sec-head" onclick="toggleSection(this)"><div class="sec-icon text-icon">••</div><div class="sec-title-row"><span class="sec-label">Мягкое зерно</span></div><svg class="sec-chevron" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5l5 5 5-5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+            <div class="sec-body"><div id="grain-toggle"></div><div class="grain-presets"><button class="tag" onclick="setGrainPreset(12,14,20)">Натуральное</button><button class="tag" onclick="setGrainPreset(20,28,35)">Пленочное</button><button class="tag" onclick="setGrainPreset(22,26,31)">Заметное</button><button class="tag" onclick="setGrainPreset(28,42,48)">Выраженное</button></div><div id="grain-list"></div></div>
+          </div>
+
+          <div class="sec-block">
+            <div class="sec-head" onclick="toggleSection(this)">
+              <div class="sec-icon">
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><path d="M2 4h10M2 10h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="5" cy="4" r="1.5" fill="currentColor"/><circle cx="9" cy="10" r="1.5" fill="currentColor"/></svg>
+              </div>
+              <div class="sec-title-row"><span class="sec-label">Базовая коррекция</span></div>
+              <svg class="sec-chevron" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5l5 5 5-5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="sec-body" id="slider-list"></div>
+          </div>
+
+          <div class="sec-block closed">
+            <div class="sec-head" onclick="toggleSection(this)">
+              <div class="sec-icon">
+                <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="2.3" stroke="currentColor" stroke-width="1.2"/><path d="M7 1.2v1.3M7 11.5v1.3M1.2 7h1.3M11.5 7h1.3M3.2 3.2l.9.9M9.9 9.9l.9.9M10.8 3.2l-.9.9M4.1 9.9l-.9.9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              </div>
+              <div class="sec-title-row"><span class="sec-label">Теплый свет</span></div>
+              <svg class="sec-chevron" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5l5 5 5-5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="sec-body">
+              <div class="control-group">
+                <div class="ctrl-label"><span>Безопасность лампы</span><span class="ctrl-value">75</span></div>
+                <div class="slider-wrap"><input type="range" min="0" max="100" value="75" oninput="updateRangeFill(this)"></div>
+              </div>
+              <div class="control-group">
+                <div class="ctrl-label"><span>Нейтрализация фона</span><span class="ctrl-value">50</span></div>
+                <div class="slider-wrap"><input type="range" min="0" max="100" value="50" oninput="updateRangeFill(this)"></div>
+              </div>
+              <div class="toggle-row">
+                <span class="toggle-label">Сохранение теплой атмосферы</span>
+                <div class="toggle on" data-toggle="preserveWarmObjects" onclick="toggleSetting(this)"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sec-block closed">
+            <div class="sec-head" onclick="toggleSection(this)">
+              <div class="sec-icon">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1.5L12 4.5L6.5 7.5L1 4.5L6.5 1.5Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M1 8.5l5.5 3 5.5-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="sec-title-row"><span class="sec-label">Свет и глубина</span></div>
+              <svg class="sec-chevron" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5l5 5 5-5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="sec-body" id="light-depth-list"></div>
+          </div>
+
+          <div class="sec-block closed">
+            <div class="sec-head" onclick="toggleSection(this)">
+              <div class="sec-icon text-icon">FX</div>
+              <div class="sec-title-row"><span class="sec-label">Эффекты</span></div>
+              <svg class="sec-chevron" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5l5 5 5-5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            <div class="sec-body" id="effects-list"></div>
+          </div>
+
+          <div class="sec-block closed">
+            <div class="sec-head" onclick="toggleSection(this)">
+              <div class="sec-icon">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1.3L11.5 3.2V6.5C11.5 9.2 9.2 11.3 6.5 12C3.8 11.3 1.5 9.2 1.5 6.5V3.2L6.5 1.3Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="M4.5 6.5L6 8L8.5 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="sec-title-row"><span class="sec-label">Защита цвета</span></div>
+              <svg class="sec-chevron" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5l5 5 5-5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="sec-body" id="toggle-list"></div>
+          </div>
+          <div class="sec-block closed">
+            <div class="sec-head" onclick="toggleSection(this)"><div class="sec-icon text-icon">HSL</div><div class="sec-title-row"><span class="sec-label">Кожа и HSL</span></div><svg class="sec-chevron" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5l5 5 5-5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+            <div class="sec-body" id="hsl-list"></div>
+          </div>
+          <div class="sec-block closed">
+            <div class="sec-head" onclick="toggleSection(this)"><div class="sec-icon text-icon">RGB</div><div class="sec-title-row"><span class="sec-label">Калибровка</span></div><svg class="sec-chevron" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5l5 5 5-5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+            <div class="sec-body" id="calibration-list"></div>
+          </div>
+          <div class="sec-block closed">
+            <div class="sec-head" onclick="toggleSection(this)"><div class="sec-icon">◐</div><div class="sec-title-row"><span class="sec-label">Светлые области</span></div><svg class="sec-chevron" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5l5 5 5-5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+            <div class="sec-body" id="highlights-list"></div>
+          </div>
+          <div style="height:10px"></div>
+        </div>
+
+        <div class="panel-footer">
+          <div class="footer-grid">
+            <button class="action-main" onclick="downloadCurrent()">
+              <svg width="12" height="12" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.2" stroke="currentColor" stroke-width="1.3"/><circle cx="6.5" cy="6.5" r="2.5" fill="currentColor"/></svg>
+              Скачать
+            </button>
+            <button class="action-secondary copy-btn" onclick="openImagePicker()" title="Добавить фото" aria-label="Добавить фото">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const presets = {
+  level1: { label:"1", strength:52, temperature:-1, tint:0, yellowRemoval:30, skinProtection:94, exposure:0, vibrance:1, shadowDepth:8, shadowLift:3, highlightRecovery:24, midtoneContrast:3, softDepth:9, faceLightProtection:94, backgroundDepth:7, preserveWarmObjects:true, highlightProtection:true, shadowProtection:true, blueProtection:98, magentaProtection:96 },
+  level2: { label:"2", strength:62, temperature:-3, tint:0, yellowRemoval:44, skinProtection:91, exposure:0, vibrance:2, shadowDepth:10, shadowLift:1, highlightRecovery:21, midtoneContrast:4, softDepth:11, faceLightProtection:91, backgroundDepth:9, preserveWarmObjects:true, highlightProtection:true, shadowProtection:true, blueProtection:97, magentaProtection:95 },
+  level3: { label:"3", strength:70, temperature:-4, tint:0, yellowRemoval:56, skinProtection:88, exposure:0, vibrance:2, shadowDepth:11, shadowLift:0, highlightRecovery:20, midtoneContrast:5, softDepth:13, faceLightProtection:88, backgroundDepth:11, preserveWarmObjects:true, highlightProtection:true, shadowProtection:true, blueProtection:97, magentaProtection:95 },
+  level4: { label:"4", strength:78, temperature:-6, tint:0, yellowRemoval:70, skinProtection:86, exposure:1, vibrance:2, shadowDepth:13, shadowLift:0, highlightRecovery:23, midtoneContrast:6, softDepth:15, faceLightProtection:86, backgroundDepth:14, preserveWarmObjects:true, highlightProtection:true, shadowProtection:true, blueProtection:98, magentaProtection:96 },
+  level5: { label:"5", strength:88, temperature:-10, tint:0, yellowRemoval:88, skinProtection:86, exposure:1, vibrance:2, shadowDepth:14, shadowLift:0, highlightRecovery:25, midtoneContrast:7, softDepth:16, faceLightProtection:86, backgroundDepth:16, preserveWarmObjects:true, highlightProtection:true, shadowProtection:true, blueProtection:99, magentaProtection:97 },
+  level6: { label:"6", strength:100, temperature:-13, tint:0, yellowRemoval:100, skinProtection:86, exposure:1, vibrance:2, shadowDepth:15, shadowLift:0, highlightRecovery:28, midtoneContrast:8, softDepth:17, faceLightProtection:86, backgroundDepth:18, preserveWarmObjects:true, highlightProtection:true, shadowProtection:true, blueProtection:100, magentaProtection:98 }
+};
+
+const advancedDefaults = {
+  saturation:0, blueProtection:85, magentaProtection:90, preserveLuminance:true,
+  preserveHair:true, preserveClothing:true, skinVitality:0,
+  yellowHue:0, yellowSaturation:0, yellowLuminance:0,
+  orangeHue:0, orangeSaturation:0, orangeLuminance:0,
+  greenPrimaryHue:0, greenPrimarySaturation:0, bluePrimaryHue:0, bluePrimarySaturation:0,
+  channelGainR:1, channelGainG:1, channelGainB:1,
+  texture:0, clarity:0, dehaze:20, effectsVignette:0,
+  highlights:0, whites:0, whiteNeutralization:35,
+  grainEnabled:false, grainAmount:6, grainSize:18, grainRoughness:22
+};
+Object.keys(presets).forEach((key) => { presets[key] = { ...advancedDefaults, ...presets[key] }; });
+const manualBaseSettings = {
+  ...presets.level1,
+  strength:0, temperature:0, tint:0, yellowRemoval:0, skinProtection:0,
+  exposure:0, vibrance:0, saturation:0, shadowDepth:0, shadowLift:0,
+  highlightRecovery:0, midtoneContrast:0, softDepth:0, faceLightProtection:0,
+  backgroundDepth:0, highlights:0, whites:0, whiteNeutralization:0,
+  yellowHue:0, yellowSaturation:0, yellowLuminance:0,
+  orangeHue:0, orangeSaturation:0, orangeLuminance:0,
+  greenPrimaryHue:0, greenPrimarySaturation:0, bluePrimaryHue:0, bluePrimarySaturation:0,
+  grainEnabled:false
+};
+
+const sliders = [
+  { key:"strength", label:"Сила", min:0, max:100, step:1 },
+  { key:"temperature", label:"Температура", min:-100, max:100, step:1 },
+  { key:"tint", label:"Оттенок", min:-50, max:50, step:1 },
+  { key:"yellowRemoval", label:"Убрать желтизну", min:0, max:100, step:1 },
+  { key:"skinProtection", label:"Защита кожи", min:0, max:100, step:1 },
+  { key:"exposure", label:"Экспозиция", min:-20, max:20, step:1 },
+  { key:"vibrance", label:"Естественная цветность", min:-30, max:30, step:1 },
+  { key:"saturation", label:"Насыщенность", min:-20, max:20, step:1 },
+  { key:"blueProtection", label:"Защита от синего", min:0, max:100, step:1 },
+  { key:"magentaProtection", label:"Защита от фиолетового", min:0, max:100, step:1 }
+];
+
+const hslSliders = [
+  { key:"skinVitality", label:"Живость кожи", min:-30, max:30, step:1 },
+  { key:"yellowHue", label:"Тон", min:-30, max:30, step:1 },
+  { key:"yellowSaturation", label:"Насыщенность", min:-50, max:50, step:1 },
+  { key:"yellowLuminance", label:"Светлота", min:-30, max:30, step:1 },
+  { key:"orangeHue", label:"Тон", min:-30, max:30, step:1 },
+  { key:"orangeSaturation", label:"Насыщенность", min:-50, max:50, step:1 },
+  { key:"orangeLuminance", label:"Светлота", min:-30, max:30, step:1 }
+];
+
+const calibrationSliders = [
+  { key:"greenPrimaryHue", label:"Тон", min:-30, max:30, step:1 },
+  { key:"greenPrimarySaturation", label:"Насыщенность", min:-30, max:30, step:1 },
+  { key:"bluePrimaryHue", label:"Тон", min:-30, max:30, step:1 },
+  { key:"bluePrimarySaturation", label:"Насыщенность", min:-30, max:30, step:1 }
+];
+
+const highlightSliders = [
+  { key:"highlights", label:"Светлые области", min:-50, max:50, step:1 },
+  { key:"whites", label:"Белые", min:-50, max:50, step:1 },
+  { key:"whiteNeutralization", label:"Нейтрализация белых", min:0, max:100, step:1 }
+];
+
+const grainSliders = [
+  { key:"grainAmount", label:"Количество", min:0, max:30, step:1 },
+  { key:"grainSize", label:"Размер", min:0, max:50, step:1 },
+  { key:"grainRoughness", label:"Неровность", min:0, max:50, step:1 }
+];
+
+const effectsSliders = [
+  { key:"texture", label:"Текстура", min:-50, max:50, step:1 },
+  { key:"clarity", label:"Четкость", min:-50, max:50, step:1 },
+  { key:"dehaze", label:"Удаление дымки", min:-50, max:50, step:1 },
+  { key:"effectsVignette", label:"Виньетка", min:0, max:30, step:1 }
+];
+
+const lightDepthSliders = [
+  { key:"shadowDepth", label:"Глубина теней", min:0, max:100, step:1 },
+  { key:"shadowLift", label:"Поднять тени", min:-50, max:50, step:1 },
+  { key:"highlightRecovery", label:"Восстановление светов", min:0, max:100, step:1 },
+  { key:"midtoneContrast", label:"Контраст средних тонов", min:-50, max:50, step:1 },
+  { key:"softDepth", label:"Мягкая глубина", min:0, max:100, step:1 },
+  { key:"faceLightProtection", label:"Защита света на лице", min:0, max:100, step:1 },
+  { key:"backgroundDepth", label:"Глубина фона", min:0, max:100, step:1 }
+];
+
+const toggles = [
+  { key:"preserveWarmObjects", label:"Сохранять теплые объекты" },
+  { key:"highlightProtection", label:"Защита светов" },
+  { key:"shadowProtection", label:"Защита теней" },
+  { key:"preserveLuminance", label:"Сохранять естественный свет" },
+  { key:"preserveHair", label:"Сохранять цвет волос" },
+  { key:"preserveClothing", label:"Сохранять цвет одежды" }
+];
+
+let images = [];
+let currentIndex = 0;
+let settings = { ...presets.level3 };
+let currentPreset = "level3";
+let compareMode = "slider";
+let previewUrl = "";
+let previewTimer = null;
+let previewZoom = 1;
+let previewPanX = 0;
+let previewPanY = 0;
+let panStart = null;
+let lastPreviewRenderZoom = 1;
+let workMode = "auto";
+let pickerMode = "";
+let autoSettingsSnapshot = { ...settings };
+let manualReferenceSettings = null;
+let batchBaseSettings = null;
+
+function post(type, payload = {}) {
+  // The browser edition does not need a host controller.
+}
+
+function bytesFrom(value) {
+  if (value instanceof Uint8Array) return value;
+  if (Array.isArray(value)) return new Uint8Array(value);
+  if (value && value.data) return new Uint8Array(value.data);
+  return new Uint8Array(value || []);
+}
+
+function setStatus(text, mode = "idle") {
+  document.getElementById("status-text").textContent = text;
+  const dot = document.getElementById("status-dot");
+  dot.className = "dot" + (mode === "busy" ? " busy" : mode === "ok" ? " ok" : "");
+}
+
+function setImageSrc(id, src) {
+  const node = document.getElementById(id);
+  if (node) node.src = src;
+}
+
+function toggleTheme() {
+  document.body.classList.toggle("dark");
+  document.querySelectorAll('input[type="range"]').forEach(updateRangeFill);
+}
+
+function toggleSection(head) {
+  const block = head.closest(".sec-block");
+  if (block) block.classList.toggle("closed");
+}
+
+function setPreviewZoom(value) {
+  previewZoom = Math.max(0.5, Math.min(3, value));
+  if (previewZoom <= 1) {
+    previewPanX = 0;
+    previewPanY = 0;
+  }
+  document.documentElement.style.setProperty("--preview-zoom", previewZoom.toFixed(3));
+  document.documentElement.style.setProperty("--preview-pan-x", `${previewPanX}px`);
+  document.documentElement.style.setProperty("--preview-pan-y", `${previewPanY}px`);
+  document.getElementById("canvas-wrap").classList.toggle("zoomed", previewZoom > 1);
+  const label = document.getElementById("zoom-label");
+  if (label) label.textContent = `${Math.round(previewZoom * 100)}%`;
+  if (images.length && previewZoom > lastPreviewRenderZoom * 1.2) queuePreview();
+}
+
+function adjustPreviewZoom(delta) {
+  setPreviewZoom(previewZoom + delta);
+}
+
+function resetPreviewZoom() {
+  previewPanX = 0;
+  previewPanY = 0;
+  setPreviewZoom(1);
+}
+
+function setPreviewPan(x, y, host) {
+  const maxX = Math.max(0, host.clientWidth * (previewZoom - 1) / 2);
+  const maxY = Math.max(0, host.clientHeight * (previewZoom - 1) / 2);
+  previewPanX = Math.max(-maxX, Math.min(maxX, x));
+  previewPanY = Math.max(-maxY, Math.min(maxY, y));
+  document.documentElement.style.setProperty("--preview-pan-x", `${previewPanX}px`);
+  document.documentElement.style.setProperty("--preview-pan-y", `${previewPanY}px`);
+}
+
+const canvasWrap = document.getElementById("canvas-wrap");
+canvasWrap.addEventListener("pointerdown", (event) => {
+  if (previewZoom <= 1 || pickerMode || event.target.closest("button,input")) return;
+  const host = event.target.closest(".split-pane") || event.target.closest("#compare-card");
+  if (!host) return;
+  panStart = { x:event.clientX, y:event.clientY, panX:previewPanX, panY:previewPanY, host };
+  canvasWrap.classList.add("panning");
+  canvasWrap.setPointerCapture(event.pointerId);
+  event.preventDefault();
+});
+canvasWrap.addEventListener("pointermove", (event) => {
+  if (!panStart) return;
+  setPreviewPan(panStart.panX + event.clientX - panStart.x, panStart.panY + event.clientY - panStart.y, panStart.host);
+});
+function finishPan(event) {
+  if (!panStart) return;
+  panStart = null;
+  canvasWrap.classList.remove("panning");
+  if (event && canvasWrap.hasPointerCapture(event.pointerId)) canvasWrap.releasePointerCapture(event.pointerId);
+}
+canvasWrap.addEventListener("pointerup", finishPan);
+canvasWrap.addEventListener("pointercancel", finishPan);
+canvasWrap.addEventListener("wheel", (event) => {
+  if (!(event.metaKey || event.ctrlKey)) return;
+  event.preventDefault();
+  adjustPreviewZoom(event.deltaY < 0 ? .12 : -.12);
+}, { passive:false });
+
+function shouldIgnorePlainZoomShortcut(target) {
+  if (!target) return false;
+  const tag = target.tagName;
+  return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target.isContentEditable;
+}
+
+document.addEventListener("keydown", (event) => {
+  const key = event.key;
+  if (key === "Escape" && pickerMode) {
+    event.preventDefault();
+    cancelPicker();
+    setStatus("Пипетка отменена", "idle");
+    return;
+  }
+  const withModifier = event.metaKey || event.ctrlKey;
+  const canUsePlain = !shouldIgnorePlainZoomShortcut(event.target);
+  const isPlus = key === "+" || key === "=";
+  const isMinus = key === "-" || key === "_";
+  const isZero = key === "0" || key === ")";
+
+  if (!(withModifier || canUsePlain)) return;
+
+  if (isPlus) {
+    event.preventDefault();
+    adjustPreviewZoom(0.15);
+  } else if (isMinus) {
+    event.preventDefault();
+    adjustPreviewZoom(-0.15);
+  } else if (isZero) {
+    event.preventDefault();
+    resetPreviewZoom();
+  }
+});
+
+function notify(message) {
+  const toast = document.getElementById("browser-toast");
+  if (!toast) return;
+  toast.textContent = message;
+  toast.classList.add("show");
+  clearTimeout(notify.timer);
+  notify.timer = setTimeout(() => toast.classList.remove("show"), 2600);
+}
+
+function setLoading(show) {
+  document.getElementById("loader").style.display = show ? "flex" : "none";
+}
+
+function showEmpty(message) {
+  setLoading(false);
+  document.getElementById("empty-state").style.display = "flex";
+  document.querySelector(".empty-body").textContent = message;
+}
+
+function slidersMarkup(items) {
+  return items.map((slider) => `
+    <div class="control-group">
+      <div class="ctrl-label"><span>${slider.label}</span><span id="val-${slider.key}" class="ctrl-value">${settings[slider.key]}</span></div>
+      <div class="slider-wrap"><input type="range" id="input-${slider.key}" min="${slider.min}" max="${slider.max}" step="${slider.step}" value="${settings[slider.key]}" oninput="updateSlider('${slider.key}',this)"></div>
+    </div>`).join("");
+}
+
+function colorGroupMarkup(title, className, swatch, items) {
+  return `<div class="color-group ${className}"><div class="color-group-title"><span class="color-swatch" style="--swatch:${swatch}"></span>${title}</div>${slidersMarkup(items)}</div>`;
+}
+
+function renderControls() {
+  const presetWrap = document.getElementById("preset-tags");
+  presetWrap.innerHTML = Object.entries(presets).map(([key, preset]) =>
+    `<span class="tag ${key === currentPreset ? "active" : ""}" onclick="selectPreset('${key}',this)">${preset.label}</span>`
+  ).join("");
+
+  document.getElementById("slider-list").innerHTML = slidersMarkup(sliders);
+  document.getElementById("light-depth-list").innerHTML = slidersMarkup(lightDepthSliders);
+  document.getElementById("effects-list").innerHTML = slidersMarkup(effectsSliders);
+  document.getElementById("hsl-list").innerHTML = slidersMarkup(hslSliders.slice(0,1))
+    + colorGroupMarkup("Желтый", "yellow", "#D7B92D", hslSliders.slice(1,4))
+    + colorGroupMarkup("Оранжевый", "orange", "#D8842F", hslSliders.slice(4,7));
+  document.getElementById("calibration-list").innerHTML = colorGroupMarkup("Зеленый основной", "green", "#4D9B62", calibrationSliders.slice(0,2))
+    + colorGroupMarkup("Синий основной", "blue", "#4C70C9", calibrationSliders.slice(2,4));
+  document.getElementById("highlights-list").innerHTML = slidersMarkup(highlightSliders);
+  document.getElementById("grain-list").innerHTML = slidersMarkup(grainSliders);
+  document.getElementById("grain-toggle").innerHTML = `<div class="toggle-row"><span class="toggle-label">Добавить мягкое зерно</span><div class="toggle ${settings.grainEnabled ? "on" : ""}" data-toggle="grainEnabled" onclick="toggleSetting(this)"></div></div>`;
+
+  document.getElementById("toggle-list").innerHTML = toggles.map((toggle) => `
+    <div class="toggle-row">
+      <span class="toggle-label">${toggle.label}</span>
+      <div class="toggle ${settings[toggle.key] ? "on" : ""}" data-toggle="${toggle.key}" onclick="toggleSetting(this)"></div>
+    </div>
+  `).join("");
+
+  document.querySelectorAll('input[type="range"]').forEach(updateRangeFill);
+}
+
+function updateRangeFill(input) {
+  const min = Number(input.min || 0);
+  const max = Number(input.max || 100);
+  const val = Number(input.value || 0);
+  const pct = ((val - min) / (max - min)) * 100;
+  input.style.setProperty("--fill", `${pct}%`);
+}
+
+function persistCurrentSettings(customized = true) {
+  const item=images[currentIndex];
+  if(!item) return;
+  item.settings={...settings};
+  item.presetKey=currentPreset;
+  if(customized) item.customized=true;
+  if(currentIndex===0&&customized){
+    batchBaseSettings={...settings};
+    images.forEach((image,index)=>{
+      if(index>0&&!image.customized){image.settings={...batchBaseSettings};image.presetKey=currentPreset;}
+    });
+  }
+}
+
+function updateSlider(key, input) {
+  settings[key] = Number(input.value);
+  document.getElementById(`val-${key}`).textContent = input.value;
+  updateRangeFill(input);
+  persistCurrentSettings(true);
+  queuePreview();
+}
+
+function toggleSetting(el) {
+  const key = el.dataset.toggle;
+  settings[key] = !settings[key];
+  el.classList.toggle("on", settings[key]);
+  persistCurrentSettings(true);
+  queuePreview();
+}
+
+function selectPreset(key, el) {
+  currentPreset = key;
+  const persistentEffects={
+    texture:settings.texture,clarity:settings.clarity,dehaze:settings.dehaze,effectsVignette:settings.effectsVignette,
+    grainEnabled:settings.grainEnabled,grainAmount:settings.grainAmount,grainSize:settings.grainSize,grainRoughness:settings.grainRoughness
+  };
+  const adaptive = workMode === "auto" ? {
+    tint:settings.tint, exposure:settings.exposure, vibrance:settings.vibrance,
+    yellowHue:settings.yellowHue, yellowSaturation:settings.yellowSaturation, yellowLuminance:settings.yellowLuminance,
+    orangeHue:settings.orangeHue, orangeSaturation:settings.orangeSaturation, orangeLuminance:settings.orangeLuminance,
+    skinVitality:settings.skinVitality, greenPrimaryHue:settings.greenPrimaryHue,
+    greenPrimarySaturation:settings.greenPrimarySaturation, bluePrimaryHue:settings.bluePrimaryHue,
+    bluePrimarySaturation:settings.bluePrimarySaturation, highlights:settings.highlights,
+    whites:settings.whites, highlightRecovery:settings.highlightRecovery,
+    whiteNeutralization:settings.whiteNeutralization, blueProtection:settings.blueProtection,
+    magentaProtection:settings.magentaProtection, channelGainR:settings.channelGainR,
+    channelGainG:settings.channelGainG, channelGainB:settings.channelGainB
+  } : null;
+  settings = { ...settings, ...presets[key], ...persistentEffects };
+  if (adaptive) settings = { ...settings, ...adaptive };
+  const activeItem=images[currentIndex];
+  if(workMode==="auto"&&activeItem&&activeItem.illuminantGains){
+    const levelNumber=Number(key.replace("level",""))||3;
+    const gainStrength=.25+levelNumber*.125;
+    settings.channelGainR=1+(activeItem.illuminantGains.r-1)*gainStrength;
+    settings.channelGainG=1+(activeItem.illuminantGains.g-1)*gainStrength;
+    settings.channelGainB=1+(activeItem.illuminantGains.b-1)*gainStrength;
+  }
+  if (workMode === "manual" && manualReferenceSettings) settings = { ...settings, ...manualReferenceSettings };
+  persistCurrentSettings(true);
+  el.closest(".tag-row").querySelectorAll(".tag").forEach((tag) => tag.classList.remove("active"));
+  el.classList.add("active");
+  renderControls();
+  queuePreview();
+}
+
+function setWorkMode(mode, el) {
+  if (mode === "auto" && workMode === "manual") {
+    workMode = "auto";
+    cancelPicker();
+    document.body.classList.remove("manual-mode", "manual-ready");
+    document.querySelectorAll("[data-work-mode]").forEach((btn) => btn.classList.toggle("active", btn.dataset.workMode === mode));
+    autoFix();
+    return;
+  }
+  workMode = mode;
+  document.body.classList.toggle("manual-mode", mode === "manual");
+  if (mode === "manual") {
+    document.body.classList.remove("manual-ready");
+    manualReferenceSettings = null;
+    currentPreset = "level3";
+    settings = { ...manualBaseSettings };
+    persistCurrentSettings(true);
+    renderControls();
+    queuePreview(true);
+  }
+  document.querySelectorAll("[data-work-mode]").forEach((btn) => btn.classList.toggle("active", btn.dataset.workMode === mode));
+  setStatus(mode === "manual" ? "Ручная коррекция" : "Автоматическая коррекция", "ok");
+}
+
+function setGrainPreset(amount, size, roughness) {
+  settings.grainEnabled = true;
+  settings.grainAmount = amount;
+  settings.grainSize = size;
+  settings.grainRoughness = roughness;
+  persistCurrentSettings(true);
+  renderControls();
+  queuePreview(true);
+}
+
+function setCompareMode(mode, el) {
+  compareMode = mode;
+  document.querySelectorAll(".mode-btn").forEach((btn) => btn.classList.toggle("active", btn.dataset.mode === mode));
+  document.getElementById("compare-card").style.display = mode === "slider" ? "block" : "none";
+  document.getElementById("split-card").style.display = mode === "split" ? "flex" : "none";
+  document.getElementById("before-layer").style.display = "block";
+  document.getElementById("compare-handle").style.display = "block";
+  document.getElementById("compare-range").style.display = "block";
+  document.querySelector("#compare-card .compare-label.before").style.display = "block";
+}
+
+function startPicker(mode, el) {
+  pickerMode = mode;
+  document.getElementById("canvas-wrap").classList.add("picker-active");
+  document.getElementById("picker-notice").classList.add("show");
+  document.getElementById("picker-title").textContent = mode === "skin" ? "Выберите участок кожи" : "Выберите нейтральную область";
+  document.getElementById("picker-copy").textContent = mode === "skin"
+    ? "Кликните по равномерно освещенной коже без сильного блика или глубокой тени. Лучше выбрать щеку, лоб, шею, плечо или руку. Esc — отменить."
+    : "Кликните по белой, серой или молочной поверхности без блика и цветного отражения. Esc — отменить.";
+  document.querySelectorAll("[data-picker]").forEach((btn) => btn.classList.toggle("active", btn === el));
+  setStatus("Режим пипетки активен", "busy");
+}
+
+function cancelPicker() {
+  pickerMode = "";
+  document.getElementById("canvas-wrap").classList.remove("picker-active");
+  document.getElementById("picker-notice").classList.remove("show");
+  document.querySelectorAll("[data-picker]").forEach((btn) => btn.classList.remove("active"));
+}
+
+async function sampleOriginalAt(event) {
+  const item = images[currentIndex];
+  if (!item) return null;
+  const host = event.target.closest(".split-pane") || document.getElementById("compare-card");
+  const rect = host.getBoundingClientRect();
+  const bitmap = await decodeBitmap(item.bytes);
+  const hostRatio = rect.width / rect.height;
+  const imageRatio = bitmap.width / bitmap.height;
+  let shownW = rect.width, shownH = rect.height, offsetX = 0, offsetY = 0;
+  if (imageRatio > hostRatio) { shownH = rect.width / imageRatio; offsetY = (rect.height - shownH) / 2; }
+  else { shownW = rect.height * imageRatio; offsetX = (rect.width - shownW) / 2; }
+  shownW *= previewZoom;
+  shownH *= previewZoom;
+  offsetX = (rect.width - shownW) / 2 + previewPanX;
+  offsetY = (rect.height - shownH) / 2 + previewPanY;
+  const localX = event.clientX - rect.left - offsetX;
+  const localY = event.clientY - rect.top - offsetY;
+  if (localX < 0 || localY < 0 || localX > shownW || localY > shownH) return null;
+  const px = Math.round(localX / shownW * (bitmap.width - 1));
+  const py = Math.round(localY / shownH * (bitmap.height - 1));
+  const canvas = document.createElement("canvas");
+  const size = 16;
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext("2d", { willReadFrequently:true });
+  ctx.drawImage(bitmap, Math.max(0, px - 8), Math.max(0, py - 8), size, size, 0, 0, size, size);
+  const data = ctx.getImageData(0,0,size,size).data;
+  let r=0,g=0,b=0,count=0;
+  for(let i=0;i<data.length;i+=4){ if(data[i+3]){r+=data[i];g+=data[i+1];b+=data[i+2];count++;} }
+  return count ? { r:r/count, g:g/count, b:b/count, x:event.clientX, y:event.clientY } : null;
+}
+
+function applyPickerSample(sample, mode) {
+  const avg = (sample.r + sample.g + sample.b) / 3;
+  const warm = (sample.r - sample.b) / 255;
+  const green = (sample.g - (sample.r + sample.b) / 2) / 255;
+  const luma = avg / 255;
+  const hsv = rgbToHsv(sample.r, sample.g, sample.b);
+  currentPreset = "level3";
+  settings = { ...settings, ...presets.level3 };
+
+  if (mode === "skin") {
+    const targetWarm = 0.19;
+    const hueError = ((28 - hsv.h + 540) % 360) - 180;
+    const targetSkinSaturation = Math.max(.28, Math.min(.44, .34 + (.55-luma)*.12));
+    const targetSkinValue = Math.max(.18, Math.min(.94, hsv.v));
+    const targetSkin = hsvToRgb(28,targetSkinSaturation,targetSkinValue);
+    settings.channelGainR = Math.max(.78,Math.min(1.22,Math.pow(targetSkin[0]/Math.max(12,sample.r),.72)));
+    settings.channelGainG = Math.max(.78,Math.min(1.22,Math.pow(targetSkin[1]/Math.max(12,sample.g),.72)));
+    settings.channelGainB = Math.max(.78,Math.min(1.22,Math.pow(targetSkin[2]/Math.max(12,sample.b),.72)));
+    settings.temperature = Math.round(Math.max(-18, Math.min(16, (targetWarm - warm) * 72)));
+    settings.tint = Math.round(Math.max(-10, Math.min(10, -green * 48)));
+    settings.exposure = luma < .25 ? 3 : luma < .36 ? 1 : luma > .84 ? -3 : luma > .74 ? -1 : 0;
+    settings.yellowRemoval = Math.round(Math.max(38, Math.min(72, 44 + Math.max(0, warm - targetWarm) * 90)));
+    settings.yellowSaturation = Math.round(Math.max(-28, Math.min(6, -(Math.max(0, hsv.h - 34) * .75 + Math.max(0, hsv.s - .5) * 30))));
+    settings.orangeHue = Math.round(Math.max(-14, Math.min(14, hueError * .38)));
+    settings.orangeSaturation = Math.round(Math.max(-20, Math.min(16, (.42 - hsv.s) * 48)));
+    settings.orangeLuminance = luma < .34 ? 7 : luma > .76 ? -5 : 1;
+    settings.skinVitality = Math.round(Math.max(-8, Math.min(10, (.44 - hsv.s) * 24)));
+    settings.skinProtection = 58;
+    settings.highlights = luma > .74 ? -8 : 6;
+    settings.whites = 4;
+    settings.whiteNeutralization = 45;
+  } else {
+    const neutralTarget=(sample.r+sample.g+sample.b)/3;
+    settings.channelGainR = Math.max(.76,Math.min(1.24,Math.pow(neutralTarget/Math.max(12,sample.r),.78)));
+    settings.channelGainG = Math.max(.76,Math.min(1.24,Math.pow(neutralTarget/Math.max(12,sample.g),.78)));
+    settings.channelGainB = Math.max(.76,Math.min(1.24,Math.pow(neutralTarget/Math.max(12,sample.b),.78)));
+    settings.temperature = Math.round(Math.max(-24, Math.min(20, -warm * 58)));
+    settings.tint = Math.round(Math.max(-12, Math.min(12, -green * 55)));
+    settings.exposure = Math.round(Math.max(-4, Math.min(4, (.90 - luma) * 12)));
+    settings.yellowRemoval = Math.round(Math.max(46, Math.min(82, 52 + Math.max(0, warm) * 105)));
+    settings.highlights = Math.round(Math.max(10, Math.min(50, (.90 - luma) * 115)));
+    settings.whites = Math.round(Math.max(8, Math.min(45, (.95 - luma) * 100)));
+    settings.highlightRecovery = luma > .92 ? 42 : 24;
+    settings.whiteNeutralization = 100;
+    settings.skinProtection = 84;
+  }
+
+  settings.blueProtection = 99;
+  settings.magentaProtection = 97;
+  manualReferenceSettings = {
+    temperature:settings.temperature, tint:settings.tint, exposure:settings.exposure,
+    yellowSaturation:settings.yellowSaturation, orangeHue:settings.orangeHue,
+    orangeSaturation:settings.orangeSaturation, orangeLuminance:settings.orangeLuminance,
+    skinVitality:settings.skinVitality, skinProtection:settings.skinProtection,
+    highlights:settings.highlights, whites:settings.whites,
+    highlightRecovery:settings.highlightRecovery, whiteNeutralization:settings.whiteNeutralization,
+    blueProtection:settings.blueProtection, magentaProtection:settings.magentaProtection,
+    channelGainR:settings.channelGainR, channelGainG:settings.channelGainG, channelGainB:settings.channelGainB
+  };
+  document.body.classList.add("manual-ready");
+  const currentItem=images[currentIndex];
+  if(currentItem) currentItem.manualReady=true;
+  persistCurrentSettings(true);
+  renderControls();
+  queuePreview(true);
+}
+
+document.getElementById("canvas-wrap").addEventListener("click", async (event) => {
+  if (!pickerMode) return;
+  if (!event.target.closest("#compare-card,.split-pane")) return;
+  event.preventDefault(); event.stopPropagation();
+  const mode = pickerMode;
+  const sample = await sampleOriginalAt(event);
+  if (!sample) { setStatus("Выберите область внутри фотографии", "idle"); return; }
+  const wrapRect = document.getElementById("canvas-wrap").getBoundingClientRect();
+  const marker = document.getElementById("sample-marker");
+  marker.style.left = `${sample.x - wrapRect.left}px`; marker.style.top = `${sample.y - wrapRect.top}px`; marker.style.display = "block";
+  applyPickerSample(sample, mode);
+  cancelPicker();
+  setStatus(mode === "skin" ? "Кожа определена, настройки обновлены" : "Нейтральная область определена", "ok");
+  setTimeout(() => marker.style.display = "none", 1500);
+});
+
+function updateComparePosition(value) {
+  value = Math.max(0, Math.min(100, value));
+  document.getElementById("compare-range").value = value;
+  document.getElementById("before-layer").style.clipPath = `inset(0 ${100 - value}% 0 0)`;
+  document.getElementById("compare-handle").style.left = `${value}%`;
+}
+
+let compareDragging = false;
+const compareCard = document.getElementById("compare-card");
+compareCard.addEventListener("pointerdown", (event) => {
+  if (compareMode !== "slider" || pickerMode) return;
+  const rect = compareCard.getBoundingClientRect();
+  const current = Number(document.getElementById("compare-range").value);
+  const handleX = rect.left + rect.width * current / 100;
+  if (Math.abs(event.clientX - handleX) > 32) return;
+  compareDragging = true;
+  compareCard.setPointerCapture(event.pointerId);
+  event.stopPropagation();
+  updateComparePosition((event.clientX - rect.left) / rect.width * 100);
+});
+compareCard.addEventListener("pointermove", (event) => {
+  if (!compareDragging) return;
+  const rect = compareCard.getBoundingClientRect();
+  updateComparePosition((event.clientX - rect.left) / rect.width * 100);
+  event.stopPropagation();
+});
+compareCard.addEventListener("pointerup", (event) => {
+  if (!compareDragging) return;
+  compareDragging = false;
+  if (compareCard.hasPointerCapture(event.pointerId)) compareCard.releasePointerCapture(event.pointerId);
+  event.stopPropagation();
+});
+
+function objectUrlFor(item) {
+  if (!item.url) item.url = URL.createObjectURL(new Blob([item.bytes]));
+  return item.url;
+}
+
+function renderThumbs() {
+  const count = document.getElementById("selection-count");
+  if (count) count.textContent = `${images.length} ${images.length === 1 ? "фото выбрано" : "фото выбрано"}`;
+  const strip = document.getElementById("thumb-strip");
+  strip.innerHTML = images.map((item, index) => `
+    <button class="thumb ${index === currentIndex ? "active" : ""}" onclick="selectImage(${index})">
+      <img src="${objectUrlFor(item)}" alt="">
+      <span>${String(index + 1).padStart(2, "0")}</span>
+    </button>
+  `).join("") + `<button class="add-photo-thumb" onclick="openImagePicker()" title="Добавить фото" aria-label="Добавить фото">+</button>`;
+}
+
+function selectImage(index) {
+  persistCurrentSettings(false);
+  currentIndex = index;
+  const item=images[currentIndex];
+  if(item){
+    if(!item.settings) item.settings={...(batchBaseSettings||settings)};
+    settings={...item.settings};
+    currentPreset=item.presetKey||"level3";
+    if(workMode==="manual") document.body.classList.toggle("manual-ready",!!item.manualReady);
+    renderControls();
+  }
+  renderThumbs();
+  renderCurrent();
+}
+
+function renderCurrent() {
+  const item = images[currentIndex];
+  if (!item) return;
+  const beforeUrl = objectUrlFor(item);
+  ["before-img", "split-before"].forEach((id) => setImageSrc(id, beforeUrl));
+  queuePreview(true);
+  setStatus(`${currentIndex + 1} из ${images.length}: ${item.name}`, "idle");
+}
+
+function queuePreview(immediate = false) {
+  clearTimeout(previewTimer);
+  previewTimer = setTimeout(renderPreview, immediate ? 0 : 180);
+}
+
+async function decodeBitmap(bytes) {
+  const blob = new Blob([bytes]);
+  if ("createImageBitmap" in window) return await createImageBitmap(blob);
+  return await new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = URL.createObjectURL(blob);
+  });
+}
+
+function clamp(value) {
+  return Math.max(0, Math.min(255, value));
+}
+
+function clamp01(value) {
+  return Math.max(0, Math.min(1, value));
+}
+
+function smoothstep(edge0, edge1, value) {
+  const t = clamp01((value - edge0) / (edge1 - edge0));
+  return t * t * (3 - 2 * t);
+}
+
+function mix(a, b, t) {
+  return a * (1 - t) + b * t;
+}
+
+function rgbToHsv(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  const d = max - min;
+  let h = 0;
+  if (d) {
+    if (max === r) h = ((g - b) / d) % 6;
+    else if (max === g) h = (b - r) / d + 2;
+    else h = (r - g) / d + 4;
+    h *= 60;
+    if (h < 0) h += 360;
+  }
+  return { h, s: max ? d / max : 0, v: max };
+}
+
+function hsvToRgb(h, s, v) {
+  const c = v * s;
+  const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+  const m = v - c;
+  let rr=0,gg=0,bb=0;
+  if(h<60){rr=c;gg=x;} else if(h<120){rr=x;gg=c;} else if(h<180){gg=c;bb=x;}
+  else if(h<240){gg=x;bb=c;} else if(h<300){rr=x;bb=c;} else {rr=c;bb=x;}
+  return [(rr+m)*255,(gg+m)*255,(bb+m)*255];
+}
+
+function hueDistance(a,b) {
+  const d = Math.abs(a-b) % 360;
+  return Math.min(d,360-d);
+}
+
+function adjustHueBand(r,g,b,center,width,hueShift,satShift,lumaShift) {
+  const hsv = rgbToHsv(r,g,b);
+  const hueWeight = 1 - smoothstep(width * .45, width, hueDistance(hsv.h,center));
+  const chromaWeight=smoothstep(.06,.28,hsv.s);
+  const weight=hueWeight*chromaWeight;
+  if(weight <= 0) return [r,g,b];
+  hsv.h = (hsv.h + hueShift * weight + 360) % 360;
+  hsv.s = clamp01(hsv.s * (1 + satShift / 100 * weight));
+  hsv.v = clamp01(hsv.v + lumaShift / 100 * weight);
+  return hsvToRgb(hsv.h,hsv.s,hsv.v);
+}
+
+function buildGrainNoise(length, seed) {
+  const noise=new Float32Array(length);
+  let state=(0x9E3779B9^(seed*2654435761))>>>0;
+  const random=()=>{state=(Math.imul(state,1664525)+1013904223)>>>0;return state/4294967296;};
+  for(let i=0;i<length;i++) noise[i]=(random()+random()+random()+random()-2)*.5;
+  return noise;
+}
+
+function adjustVibrance(r, g, b, amount) {
+  const avg = (r + g + b) / 3;
+  const max = Math.max(r, g, b);
+  const satFactor = 1 + (amount / 100) * (1 - Math.abs(max - avg) / 255);
+  return [
+    clamp(avg + (r - avg) * satFactor),
+    clamp(avg + (g - avg) * satFactor),
+    clamp(avg + (b - avg) * satFactor),
+  ];
+}
+
+function applyLightDepth(r, g, b, meta) {
+  const luma = clamp01((0.2126 * r + 0.7152 * g + 0.0722 * b) / 255);
+  const originalLuma = meta.brightness;
+  const shadowMask = 1 - smoothstep(0.12, 0.55, luma);
+  const softShadowMask = 1 - smoothstep(0.2, 0.72, luma);
+  const midtoneMask = clamp01(1 - Math.abs(luma - 0.52) / 0.44);
+  const highlightMask = smoothstep(0.62, 0.96, luma);
+  const protectedHighlight = meta.warmObject ? highlightMask * 0.55 : highlightMask;
+  const faceProtect = meta.likelySkin ? settings.faceLightProtection / 100 : 0;
+  const faceFactor = 1 - faceProtect * (0.72 + highlightMask * 0.2);
+  const backgroundMask = (!meta.likelySkin && !meta.warmObject)
+    ? smoothstep(0.12, 0.62, originalLuma) * (1 - smoothstep(0.88, 1, originalLuma))
+    : 0;
+
+  let targetLuma = luma;
+
+  const softDepth = settings.softDepth / 100;
+  targetLuma -= softShadowMask * softDepth * 0.028 * (1 - highlightMask);
+  targetLuma = mix(targetLuma, 0.5 + (targetLuma - 0.5) * (1 + softDepth * 0.12), midtoneMask * softDepth * 0.55);
+  targetLuma = mix(targetLuma, Math.min(targetLuma, 0.92 + (targetLuma - 0.92) * 0.45), highlightMask * softDepth * 0.34);
+
+  targetLuma -= shadowMask * (settings.shadowDepth / 100) * 0.045 * faceFactor;
+  targetLuma += shadowMask * (settings.shadowLift / 50) * 0.065 * (1 - highlightMask);
+  targetLuma = mix(targetLuma, 0.5 + (targetLuma - 0.5) * (1 + settings.midtoneContrast / 50 * 0.18), midtoneMask * faceFactor);
+  targetLuma = mix(targetLuma, Math.min(targetLuma, 0.9 + (targetLuma - 0.9) * 0.35), settings.highlightRecovery / 100 * protectedHighlight);
+  targetLuma -= backgroundMask * (settings.backgroundDepth / 100) * 0.032;
+
+  const combinedVignette=Math.min(30,settings.effectsVignette||0);
+  if (combinedVignette > 0) {
+    const dx = meta.x - 0.5;
+    const dy = meta.y - 0.5;
+    const radius = Math.sqrt(dx * dx + dy * dy) / 0.7071;
+    const edgeMask = smoothstep(0.52, 1, radius);
+    targetLuma -= edgeMask * (combinedVignette / 30) * 0.12 * (1 - faceProtect * 0.65);
+  }
+
+  const safeMix = meta.likelySkin ? (1 - faceProtect * 0.55) : 1;
+  const ratio = luma > 0.001 ? clamp01(targetLuma) / luma : 1;
+  const amount = clamp01((0.72 + midtoneMask * 0.28) * safeMix);
+
+  return [
+    clamp(mix(r, r * ratio, amount)),
+    clamp(mix(g, g * ratio, amount)),
+    clamp(mix(b, b * ratio, amount)),
+  ];
+}
+
+async function processImage(item, opts = {}) {
+  const preview = !!opts.preview;
+  const bitmap = await decodeBitmap(item.bytes);
+  const maxSide = preview ? Math.min(2400,Math.max(1600,Math.round(1400*Math.max(1,previewZoom*.75)))) : Math.max(bitmap.width, bitmap.height);
+  const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
+  const width = Math.max(1, Math.round(bitmap.width * scale));
+  const height = Math.max(1, Math.round(bitmap.height * scale));
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  ctx.drawImage(bitmap, 0, 0, width, height);
+
+  const imageData = ctx.getImageData(0, 0, width, height);
+  const data = imageData.data;
+
+  const strength = settings.strength / 100;
+  const yellow = settings.yellowRemoval / 100;
+  const skinProtection = settings.skinProtection / 100;
+  const tempCool = -settings.temperature / 100;
+  const tint = settings.tint / 50;
+  const exposure = 1 + settings.exposure / 100;
+  const vibrance = settings.vibrance;
+  const saturation = settings.saturation;
+  const coldLimit = 1 - settings.blueProtection / 100 * 0.42;
+  const magentaLimit = 1 - settings.magentaProtection / 100 * 0.72;
+  const grainNoise=settings.grainEnabled&&settings.grainAmount>0
+    ? buildGrainNoise(width*height,Math.round(settings.grainRoughness+settings.grainSize*3))
+    : null;
+  const detailEnabled=Math.abs(settings.texture||0)>.01||Math.abs(settings.clarity||0)>.01;
+  const sourceData=detailEnabled?new Uint8ClampedArray(data):data;
+  const sourceLumaAt=(x,y)=>{
+    x=Math.max(0,Math.min(width-1,x));y=Math.max(0,Math.min(height-1,y));
+    const offset=(y*width+x)*4;
+    return .2126*sourceData[offset]+.7152*sourceData[offset+1]+.0722*sourceData[offset+2];
+  };
+
+  for (let i = 0; i < data.length; i += 4) {
+    const r0 = data[i], g0 = data[i + 1], b0 = data[i + 2], a = data[i + 3];
+    if (a === 0) continue;
+
+    const hsv = rgbToHsv(r0, g0, b0);
+    const brightness = (r0 + g0 + b0) / (3 * 255);
+    const likelySkin = r0 > 70 && g0 > 45 && b0 > 35 && r0 > b0 && g0 > b0 && (r0 - g0) < 75 && hsv.h >= 5 && hsv.h <= 55;
+    const neutralBrightnessMask=smoothstep(.14,.28,brightness)*(1-smoothstep(.91,.99,brightness));
+    const neutralMask=(1-smoothstep(.12,.46,hsv.s))*neutralBrightnessMask;
+    const warmHueMask=1-smoothstep(18,52,hueDistance(hsv.h,43));
+    const warmMask=warmHueMask*smoothstep(.15,.36,hsv.s)*(1-neutralMask*.88);
+    const warmObject = warmMask > .52;
+    const highlightWeight = settings.highlightProtection ? 1-smoothstep(.80,.95,brightness)*.52 : 1;
+    const shadowWeight = settings.shadowProtection ? .55+smoothstep(.08,.24,brightness)*.45 : 1;
+    const skinWeight = likelySkin ? (1 - skinProtection * 0.58) : 1;
+    const warmWeight = settings.preserveWarmObjects ? 1-warmMask*.55 : 1;
+    const neutralWeight = .64+neutralMask*.36;
+    const protection = highlightWeight * shadowWeight * skinWeight * warmWeight * neutralWeight;
+    const blend = Math.min(1, strength * (0.42 + protection * 0.58));
+    const cast = yellow * protection;
+
+    let r = r0 - (32 * cast) - (12 * tempCool * protection);
+    let g = g0 - (32 * cast) + (7 * tint * protection);
+    let b = b0 + (12 * cast * coldLimit) + (10 * tempCool * protection * coldLimit) - (7 * tint * protection);
+
+    const yellowExcess = Math.max(0, (r0 + g0) * .5 - b0);
+    const yellowTargetWeight=likelySkin?.24:mix(.48,.92,neutralMask);
+    const yellowMask = yellow * protection * yellowTargetWeight;
+    const yellowCorrection = yellowExcess * yellowMask;
+    r -= yellowCorrection * .42;
+    g -= yellowCorrection * .42;
+    b += yellowCorrection * .08 * coldLimit;
+
+    if (b > Math.max(r,g)) b = Math.max(r,g) + (b - Math.max(r,g)) * coldLimit;
+    if (neutralMask > 0) {
+      const neutralCeiling = (r + g) * .5 + 2.5;
+      b = mix(b,Math.min(b,neutralCeiling),neutralMask);
+    }
+    if (r > g && b > g) {
+      const magenta = Math.min(r-g,b-g);
+      r -= magenta * (1-magentaLimit) * .45;
+      b -= magenta * (1-magentaLimit) * .55;
+    }
+
+    const gainMix=strength*.78;
+    r*=mix(1,settings.channelGainR||1,gainMix);
+    g*=mix(1,settings.channelGainG||1,gainMix);
+    b*=mix(1,settings.channelGainB||1,gainMix);
+
+    r *= exposure;
+    g *= exposure;
+    b *= exposure;
+
+    if(detailEnabled){
+      const pixelIndex=i/4;
+      const px=pixelIndex%width,py=Math.floor(pixelIndex/width);
+      const centerLuma=sourceLumaAt(px,py);
+      const nearAverage=(sourceLumaAt(px-1,py)+sourceLumaAt(px+1,py)+sourceLumaAt(px,py-1)+sourceLumaAt(px,py+1))*.25;
+      const wideAverage=(sourceLumaAt(px-3,py)+sourceLumaAt(px+3,py)+sourceLumaAt(px,py-3)+sourceLumaAt(px,py+3))*.25;
+      const nearDifference=centerLuma-nearAverage;
+      const wideDifference=centerLuma-wideAverage;
+      const textureSignal=nearDifference*smoothstep(1.8,13,Math.abs(nearDifference));
+      const claritySignal=wideDifference*smoothstep(2.2,18,Math.abs(wideDifference));
+      const textureMask=.18+clamp01(1-Math.abs(brightness-.5)*1.8)*.82;
+      const textureDetail=textureSignal*(settings.texture/50)*1.15*textureMask;
+      const clarityMask=clamp01(1-Math.abs(brightness-.5)*1.7);
+      const clarityDetail=claritySignal*(settings.clarity/50)*.82*clarityMask;
+      const detailDelta=textureDetail+clarityDetail;
+      r+=detailDelta;g+=detailDelta;b+=detailDelta;
+    }
+
+    if(settings.dehaze){
+      const dehaze=settings.dehaze/50;
+      const currentLuma=clamp01((.2126*r+.7152*g+.0722*b)/255);
+      const dehazeMask=clamp01(1-Math.abs(currentLuma-.52)*1.45);
+      const targetLuma=.5+(currentLuma-.5)*(1+dehaze*.48);
+      const ratio=currentLuma>.001?targetLuma/currentLuma:1;
+      const amount=Math.abs(dehaze)*dehazeMask;
+      r=mix(r,r*ratio,amount);g=mix(g,g*ratio,amount);b=mix(b,b*ratio,amount);
+      [r,g,b]=adjustVibrance(r,g,b,dehaze*14);
+    }
+
+    [r, g, b] = adjustVibrance(r, g, b, vibrance);
+    [r, g, b] = adjustVibrance(r, g, b, saturation * .7);
+
+    [r,g,b] = adjustHueBand(r,g,b,55,38,settings.yellowHue,settings.yellowSaturation,settings.yellowLuminance);
+    [r,g,b] = adjustHueBand(r,g,b,28,30,settings.orangeHue,settings.orangeSaturation + (likelySkin ? settings.skinVitality*.35 : 0),settings.orangeLuminance + (likelySkin ? settings.skinVitality*.18 : 0));
+
+    const greenCal = settings.greenPrimarySaturation / 100;
+    const blueCal = settings.bluePrimarySaturation / 100;
+    g += (g - (r+b)/2) * greenCal * .28 + settings.greenPrimaryHue * .035 * (b-r);
+    b += (b - (r+g)/2) * blueCal * .22 + settings.bluePrimaryHue * .025 * (r-g);
+
+    r = r0 * (1 - blend) + r * blend;
+    g = g0 * (1 - blend) + g * blend;
+    b = b0 * (1 - blend) + b * blend;
+
+    [r, g, b] = applyLightDepth(r, g, b, {
+      brightness,
+      likelySkin,
+      warmObject,
+      x: ((i / 4) % width) / Math.max(1, width - 1),
+      y: Math.floor((i / 4) / width) / Math.max(1, height - 1)
+    });
+
+    const correctedLuma = 0.2126*r + 0.7152*g + 0.0722*b;
+    const originalPixelLuma = 0.2126*r0 + 0.7152*g0 + 0.0722*b0;
+    const brightMask = smoothstep(.58,.96,brightness);
+    const whiteMask = neutralMask*smoothstep(.66,.98,brightness);
+    const lightDelta = settings.highlights / 50 * 18 * brightMask + settings.whites / 50 * 16 * whiteMask;
+    r += lightDelta; g += lightDelta; b += lightDelta;
+    if (whiteMask > 0) {
+      const neutral = (r+g+b)/3;
+      const neutralMix = settings.whiteNeutralization/100 * whiteMask * .36;
+      r=mix(r,neutral,neutralMix); g=mix(g,neutral,neutralMix); b=mix(b,neutral,neutralMix);
+    }
+    if(settings.preserveLuminance && correctedLuma > .01){
+      const target = originalPixelLuma * exposure + lightDelta;
+      const ratio = target / Math.max(.01,0.2126*r+0.7152*g+0.0722*b);
+      const preserve = likelySkin ? .72 : .48;
+      r=mix(r,r*ratio,preserve); g=mix(g,g*ratio,preserve); b=mix(b,b*ratio,preserve);
+    }
+
+    const opponentAllowance=8-strength*5;
+    const originalGreenOpponent=g0-(r0+b0)*.5;
+    const currentGreenOpponent=g-(r+b)*.5;
+    const guardedGreenOpponent=Math.max(originalGreenOpponent-opponentAllowance,Math.min(originalGreenOpponent+opponentAllowance,currentGreenOpponent));
+    const greenCorrection=guardedGreenOpponent-currentGreenOpponent;
+    g+=greenCorrection*.67; r-=greenCorrection*.335; b-=greenCorrection*.335;
+
+    const blueAllowance=9-strength*4+neutralMask*24*strength;
+    const originalBlueOpponent=b0-(r0+g0)*.5;
+    const currentBlueOpponent=b-(r+g)*.5;
+    const guardedBlueOpponent=Math.max(originalBlueOpponent-blueAllowance,Math.min(originalBlueOpponent+blueAllowance,currentBlueOpponent));
+    const blueCorrection=guardedBlueOpponent-currentBlueOpponent;
+    b+=blueCorrection*.67; r-=blueCorrection*.335; g-=blueCorrection*.335;
+
+    const strongNeutralBalance=neutralMask*smoothstep(.76,.98,strength)*.62;
+    if(strongNeutralBalance>0){
+      const neutralAverage=(r+g+b)/3;
+      r=mix(r,neutralAverage,strongNeutralBalance);
+      g=mix(g,neutralAverage,strongNeutralBalance);
+      b=mix(b,neutralAverage,strongNeutralBalance);
+    }
+
+    if(grainNoise){
+      const pixelIndex=i/4;
+      const grainX=pixelIndex%width;
+      const grainY=Math.floor(pixelIndex/width);
+      const center=grainNoise[pixelIndex];
+      const left=grainNoise[grainX>0?pixelIndex-1:pixelIndex];
+      const up=grainNoise[grainY>0?pixelIndex-width:pixelIndex];
+      const diagonal=grainNoise[grainX>0&&grainY>0?pixelIndex-width-1:pixelIndex];
+      const correlated=(center+left+up+diagonal)*.5;
+      const sizeMix=clamp01(settings.grainSize/50)*.48;
+      const roughMix=clamp01(settings.grainRoughness/50);
+      const texture=mix(center,correlated,sizeMix)*(0.82+roughMix*.28);
+      const grainAmplitude=(settings.grainAmount*settings.grainAmount)/38;
+      const grain=texture*grainAmplitude;
+      const midtoneMask=clamp01(1-Math.abs(brightness-.5)*1.55);
+      const grainMask=.22+midtoneMask*.78;
+      r+=grain*grainMask; g+=grain*grainMask; b+=grain*grainMask;
+    }
+
+    data[i] = clamp(r);
+    data[i + 1] = clamp(g);
+    data[i + 2] = clamp(b);
+  }
+
+  ctx.putImageData(imageData, 0, 0);
+
+  return await new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (!blob) reject(new Error("Canvas could not create PNG blob"));
+      else resolve(blob);
+    }, "image/png");
+  });
+}
+
+async function renderPreview() {
+  const item = images[currentIndex];
+  if (!item) return;
+  setStatus("Обновление превью...", "busy");
+  try {
+    const blob = await processImage(item, { preview: true });
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    previewUrl = URL.createObjectURL(blob);
+    lastPreviewRenderZoom = previewZoom;
+    ["after-img", "split-after"].forEach((id) => setImageSrc(id, previewUrl));
+    setStatus(`${currentIndex + 1} из ${images.length}: превью готово`, "ok");
+  } catch (error) {
+    setStatus("Ошибка превью", "idle");
+    notify(`Ошибка превью: ${error.message || error}`);
+  }
+}
+
+async function analyzeImage(item) {
+  const bitmap = await decodeBitmap(item.bytes);
+  const size = 192;
+  const scale = Math.min(1,size/Math.max(bitmap.width,bitmap.height));
+  const canvas = document.createElement("canvas");
+  canvas.width=Math.max(1,Math.round(bitmap.width*scale)); canvas.height=Math.max(1,Math.round(bitmap.height*scale));
+  const ctx=canvas.getContext("2d",{willReadFrequently:true}); ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);
+  const data=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+  let r=0,g=0,b=0,n=0,allLuma=0,allLumaSq=0,allN=0;
+  let whiteR=0,whiteG=0,whiteB=0,whiteLuma=0,whiteN=0;
+  let yellowSat=0,yellowLuma=0,yellowN=0,orangeSat=0,orangeLuma=0,orangeN=0;
+  for(let i=0;i<data.length;i+=4){
+    if(!data[i+3]) continue;
+    const rr=data[i],gg=data[i+1],bb=data[i+2];
+    const hsv=rgbToHsv(rr,gg,bb); const l=(rr+gg+bb)/(3*255);
+    if(l>.08&&l<.98){allLuma+=l;allLumaSq+=l*l;allN++;}
+    if(l>.24&&l<.94&&hsv.s<.34){r+=rr;g+=gg;b+=bb;n++;}
+    if(l>.68&&l<.99&&hsv.s<.30){whiteR+=rr;whiteG+=gg;whiteB+=bb;whiteLuma+=l;whiteN++;}
+    if(hsv.h>=42&&hsv.h<=78&&hsv.s>.10&&l>.16){yellowSat+=hsv.s;yellowLuma+=l;yellowN++;}
+    if(hsv.h>=10&&hsv.h<42&&hsv.s>.12&&l>.12){orangeSat+=hsv.s;orangeLuma+=l;orangeN++;}
+  }
+  if(n<20){r=g=b=0; n=0; for(let i=0;i<data.length;i+=16){if(data[i+3]){r+=data[i];g+=data[i+1];b+=data[i+2];n++;}}}
+  r/=Math.max(1,n); g/=Math.max(1,n); b/=Math.max(1,n);
+  const warmth=(r-b)/255; const green=(g-(r+b)/2)/255; const luma=allLuma/Math.max(1,allN);
+  const effectiveWhiteN=Math.max(1,whiteN);
+  const wR=whiteN?whiteR/effectiveWhiteN:r;
+  const wG=whiteN?whiteG/effectiveWhiteN:g;
+  const wB=whiteN?whiteB/effectiveWhiteN:b;
+  const wL=whiteN?whiteLuma/effectiveWhiteN:Math.max(.72,luma);
+  const whiteWarmth=(wR-wB)/255;
+  const lumaVariance=Math.max(0,allLumaSq/Math.max(1,allN)-luma*luma);
+  const lumaSpread=Math.sqrt(lumaVariance);
+  const avgYellowSat=yellowSat/Math.max(1,yellowN);
+  const avgYellowLuma=yellowLuma/Math.max(1,yellowN);
+  const avgOrangeSat=orangeSat/Math.max(1,orangeN);
+  const avgOrangeLuma=orangeLuma/Math.max(1,orangeN);
+  const limit=(value,min,max)=>Math.max(min,Math.min(max,value));
+  const neutralTarget=(r+g+b)/3;
+  const illuminantTarget=(wR+wG+wB)/3;
+  return {
+    temperature:Math.round(limit(-(warmth*.62+whiteWarmth*.38)*55,-24,18)),
+    tint:Math.round(limit(-green*38,-10,10)),
+    yellowRemoval:Math.round(limit(34+warmth*72+whiteWarmth*55,18,82)),
+    exposure:Math.round(limit((.52-luma)*14,-4,5)),
+    vibrance:Math.round(limit(2+Math.abs(warmth)*8,1,7)),
+    yellowHue:Math.round(limit(-Math.max(0,warmth)*9,-10,2)),
+    yellowSaturation:Math.round(limit(-Math.max(0,warmth)*62-(avgYellowSat>.48?5:0),-24,2)),
+    yellowLuminance:Math.round(limit((.54-avgYellowLuma)*15,-6,7)),
+    orangeHue:Math.round(limit((.30-avgOrangeSat)*8,-5,5)),
+    orangeSaturation:Math.round(limit((.42-avgOrangeSat)*28,-12,10)),
+    orangeLuminance:Math.round(limit((.50-avgOrangeLuma)*13,-5,6)),
+    skinVitality:Math.round(limit((.40-avgOrangeSat)*16,-7,7)),
+    greenPrimaryHue:Math.round(limit(-green*90,-8,8)),
+    greenPrimarySaturation:Math.round(limit(-green*110,-10,10)),
+    bluePrimaryHue:Math.round(limit(-warmth*22,-8,4)),
+    bluePrimarySaturation:Math.round(limit(-Math.max(0,warmth)*30,-12,2)),
+    highlights:Math.round(limit((.90-wL)*95,4,34)),
+    whites:Math.round(limit((.95-wL)*78,3,28)),
+    highlightRecovery:wL>.93?34:22,
+    whiteNeutralization:Math.round(limit(48+Math.max(0,whiteWarmth)*120,42,88)),
+    blueProtection:98,
+    magentaProtection:96,
+    channelGainR:limit(Math.pow(neutralTarget/Math.max(12,r),.42),.88,1.12),
+    channelGainG:limit(Math.pow(neutralTarget/Math.max(12,g),.42),.88,1.12),
+    channelGainB:limit(Math.pow(neutralTarget/Math.max(12,b),.42),.88,1.12),
+    illuminantGainR:limit(Math.pow(illuminantTarget/Math.max(12,wR),.72),.72,1.35),
+    illuminantGainG:limit(Math.pow(illuminantTarget/Math.max(12,wG),.72),.72,1.35),
+    illuminantGainB:limit(Math.pow(illuminantTarget/Math.max(12,wB),.72),.72,1.35),
+    texture:Math.round(limit((.19-lumaSpread)*18,0,3)),
+    clarity:Math.round(limit((.18-lumaSpread)*22,1,4)),
+    dehaze:Math.round(limit((.17-lumaSpread)*30,1,6)),
+    effectsVignette:Math.round(limit((.56-luma)*8,0,3))
+  };
+}
+
+async function autoFix() {
+  const item=images[currentIndex];
+  if(!item) return;
+  setStatus("Анализируем баланс белого...","busy");
+  try{
+    const auto=await analyzeImage(item);
+    const level=Math.max(1,Math.min(6,Math.ceil(auto.yellowRemoval/16)));
+    currentPreset=`level${level}`;
+    settings={...settings,...presets[currentPreset],...auto,dehaze:20,preserveLuminance:true};
+    const gainStrength=.25+level*.125;
+    settings.channelGainR=1+(auto.illuminantGainR-1)*gainStrength;
+    settings.channelGainG=1+(auto.illuminantGainG-1)*gainStrength;
+    settings.channelGainB=1+(auto.illuminantGainB-1)*gainStrength;
+    const currentImage=images[currentIndex];
+    if(currentImage) currentImage.illuminantGains={r:auto.illuminantGainR,g:auto.illuminantGainG,b:auto.illuminantGainB};
+    autoSettingsSnapshot={...settings};
+    persistCurrentSettings(currentIndex!==0);
+    if(currentIndex===0){
+      batchBaseSettings={...settings};
+      images.forEach((image,index)=>{
+        if(index===0) return;
+        if(!image.customized){image.settings={...batchBaseSettings};image.presetKey=currentPreset;}
+      });
+    }
+    renderControls();
+    queuePreview(true);
+  }catch(error){setStatus("Не удалось выполнить автоанализ","idle");notify(`Ошибка анализа: ${error.message||error}`);}
+}
+
+async function blobToBytes(blob) {
+  if (!blob || !blob.size) throw new Error("Пустой PNG результат");
+  return Array.from(new Uint8Array(await blob.arrayBuffer()));
+}
+
+async function applyCurrent(mode, closeAfter = false) {
+  const item = images[currentIndex];
+  if (!item) return;
+  setStatus("Обработка полного изображения...", "busy");
+  document.querySelectorAll(".action-main,.action-secondary").forEach((btn) => btn.disabled = true);
+  try {
+    const blob = await processImage(item, { preview: false });
+    post("apply-one", {
+      targetId: item.id,
+      mode,
+      closeAfter,
+      bytes: await blobToBytes(blob),
+    });
+    setStatus(closeAfter ? "Сохраняю и закрываю..." : mode === "overlay" ? "Создаю слой поверх исходного..." : mode === "replace" ? "Заменяю исходное..." : "Отправлено в копию...", "busy");
+  } catch (error) {
+    setStatus("Ошибка применения", "idle");
+    notify(`Ошибка применения: ${error.message || error}`);
+  } finally {
+    document.querySelectorAll(".action-main,.action-secondary").forEach((btn) => btn.disabled = false);
+  }
+}
+
+function doneCurrent() {
+  applyCurrent("overlay", false);
+}
+
+async function applyAll() {
+  if (!images.length) return;
+  setStatus("Обработка всех выбранных...", "busy");
+  document.querySelectorAll(".action-main,.action-secondary").forEach((btn) => btn.disabled = true);
+  const activeSettings={...settings};
+  const activePreset=currentPreset;
+  try {
+    const items = [];
+    for (let i = 0; i < images.length; i++) {
+      setStatus(`Обработка ${i + 1} из ${images.length}...`, "busy");
+      settings={...(images[i].settings||batchBaseSettings||activeSettings)};
+      const blob = await processImage(images[i], { preview: false });
+      items.push({ targetId: images[i].id, bytes: await blobToBytes(blob) });
+    }
+    post("apply-many", { items });
+    setStatus("Все изображения отправлены...", "busy");
+  } catch (error) {
+    setStatus("Ошибка применения ко всем", "idle");
+    notify(`Ошибка применения ко всем: ${error.message || error}`);
+  } finally {
+    settings=activeSettings;
+    currentPreset=activePreset;
+    renderControls();
+    document.querySelectorAll(".action-main,.action-secondary").forEach((btn) => btn.disabled = false);
+  }
+}
+
+window.onmessage = (event) => {
+  const msg = event.data.pluginMessage;
+  if (!msg) return;
+
+  if (msg.type === "empty") {
+    showEmpty(msg.message || "Нет изображений.");
+    return;
+  }
+
+  if (msg.type === "apply-error") {
+    setStatus(msg.message || "Ошибка применения", "idle");
+    return;
+  }
+
+  if (msg.type === "apply-success") {
+    setStatus(msg.message || "Применено в Figma", "ok");
+    return;
+  }
+
+  if (msg.type === "init") {
+    images = (msg.images || []).map((item) => ({
+      ...item,
+      bytes: bytesFrom(item.bytes),
+      url: "",
+      settings: null,
+      presetKey: "level3",
+      customized: false,
+      manualReady: false,
+    }));
+
+    if (!images.length) {
+      showEmpty("В выбранных слоях не найдены IMAGE-заливки.");
+      return;
+    }
+
+    setLoading(false);
+    renderControls();
+    renderThumbs();
+    renderCurrent();
+    const compareButton = document.querySelector('[data-mode="split"]');
+    setCompareMode("split", compareButton);
+    autoFix();
+  }
+};
+
+const BROWSER_TRIAL_LIMIT = 5;
+const BROWSER_TRIAL_KEY = "neutral-wb-browser-trial-v1";
+
+function readTrial() {
+  try {
+    const trial = JSON.parse(localStorage.getItem(BROWSER_TRIAL_KEY) || "{}");
+    return { used: Array.isArray(trial.used) ? trial.used : [] };
+  } catch (_) {
+    return { used: [] };
+  }
+}
+
+function writeTrial(trial) {
+  localStorage.setItem(BROWSER_TRIAL_KEY, JSON.stringify(trial));
+}
+
+function openImagePicker() {
+  document.getElementById("image-file-input").click();
+}
+
+function makePhotoId(file, bytes) {
+  const sample = Array.from(bytes.subarray(0, 64)).join(",");
+  return `${file.name}:${file.size}:${file.lastModified}:${sample}`;
+}
+
+async function ingestFiles(fileList) {
+  const files = Array.from(fileList || []).filter((file) => file.type && file.type.startsWith("image/"));
+  if (!files.length) {
+    notify("Выберите PNG, JPG или WebP изображение");
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const startIndex = images.length;
+    for (const file of files) {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      images.push({
+        id: `browser-${Date.now()}-${images.length}`,
+        name: file.name || `Фото ${images.length + 1}`,
+        bytes,
+        url: "",
+        settings: startIndex ? { ...(batchBaseSettings || settings) } : null,
+        presetKey: currentPreset,
+        customized: false,
+        manualReady: false,
+        trialId: makePhotoId(file, bytes)
+      });
+    }
+
+    document.body.classList.add("browser-ready");
+    document.getElementById("empty-state").style.display = "none";
+    currentIndex = startIndex;
+    renderControls();
+    renderThumbs();
+    renderCurrent();
+    const splitButton = document.querySelector('[data-mode="split"]');
+    setCompareMode("split", splitButton);
+    if (startIndex === 0) await autoFix();
+    else setStatus(`${currentIndex + 1} из ${images.length}: добавлено`, "ok");
+  } catch (error) {
+    notify(`Не удалось открыть фото: ${error.message || error}`);
+  } finally {
+    setLoading(false);
+    const input = document.getElementById("image-file-input");
+    if (input) input.value = "";
+  }
+}
+
+async function pasteFromClipboard() {
+  try {
+    const clipboardItems = await navigator.clipboard.read();
+    for (const item of clipboardItems) {
+      const imageType = item.types.find((type) => type.startsWith("image/"));
+      if (imageType) {
+        const blob = await item.getType(imageType);
+        await ingestFiles([new File([blob], "Вставленное фото.png", { type: imageType })]);
+        return;
+      }
+    }
+    notify("В буфере нет изображения");
+  } catch (_) {
+    notify("Нажмите Ctrl/Cmd + V, чтобы вставить изображение из буфера");
+  }
+}
+
+function showTrialDialog() {
+  document.getElementById("trial-dialog").classList.add("show");
+}
+
+function hideTrialDialog() {
+  document.getElementById("trial-dialog").classList.remove("show");
+}
+
+async function downloadCurrent() {
+  const item = images[currentIndex];
+  if (!item) return;
+  const trial = readTrial();
+  const firstExport = !trial.used.includes(item.trialId);
+  if (firstExport && trial.used.length >= BROWSER_TRIAL_LIMIT) {
+    showTrialDialog();
+    return;
+  }
+
+  const buttons = document.querySelectorAll(".action-main,.action-secondary");
+  buttons.forEach((button) => button.disabled = true);
+  setStatus("Подготавливаем файл...", "busy");
+  try {
+    const blob = await processImage(item, { preview: false });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${(item.name || "corrected-photo").replace(/\.[^.]+$/, "")}-neutral-wb.png`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    if (firstExport) {
+      trial.used.push(item.trialId);
+      writeTrial(trial);
+    }
+    setStatus("Готово: файл скачан", "ok");
+  } catch (error) {
+    setStatus("Ошибка экспорта", "idle");
+    notify(`Не удалось скачать фото: ${error.message || error}`);
+  } finally {
+    buttons.forEach((button) => button.disabled = false);
+  }
+}
+
+function initBrowserEdition() {
+  renderControls();
+  setLoading(false);
+  document.getElementById("empty-state").style.display = "none";
+  const drop = document.getElementById("upload-drop");
+  ["dragenter", "dragover"].forEach((eventName) => drop.addEventListener(eventName, (event) => {
+    event.preventDefault();
+    drop.classList.add("dragging");
+  }));
+  ["dragleave", "drop"].forEach((eventName) => drop.addEventListener(eventName, (event) => {
+    event.preventDefault();
+    drop.classList.remove("dragging");
+  }));
+  drop.addEventListener("drop", (event) => ingestFiles(event.dataTransfer.files));
+  drop.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openImagePicker();
+    }
+  });
+  document.addEventListener("paste", (event) => {
+    const files = Array.from(event.clipboardData?.files || []);
+    if (files.length) ingestFiles(files);
+  });
+}
+
+initBrowserEdition();
+</script>
+</body>
+</html>
